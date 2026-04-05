@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Denem | Termodinamik Hesaplama Portalı</title>
+    <!-- Google Fonts + Font Awesome 6 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fc;
+            color: #1f2a3e;
+            line-height: 1.5;
+        }
+
+        /* Denem teması (resmi kurum stilinde) */
+        :root {
+            --primary-dark: #0a2b4e;
+            --primary-blue: #1e3a5f;
+            --accent-red: #c62828;
+            --light-bg: #ffffff;
+            --gray-border: #e2e8f0;
+            --text-dark: #1e2a3a;
+            --text-muted: #4a627a;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* üst bilgi bandı (resmi kurum bandı) */
+        .top-banner {
+            background-color: #0b2b42;
+            color: #eef2ff;
+            font-size: 0.75rem;
+            padding: 6px 0;
+            text-align: right;
+        }
+        .top-banner .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .top-banner .left-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-banner .right-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .top-banner a {
+            color: #cbd5e6;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .top-banner a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        .flag-icon {
+            font-size: 1.1rem;
+            filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+        }
+
+        /* ana header */
+        .main-header {
+            background: white;
+            border-bottom: 3px solid var(--accent-red);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            gap: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-icon {
+            background: #c62828;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .ministry-title h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0a2b4e;
+            line-height: 1.3;
+        }
+        .ministry-title p {
+            font-size: 0.7rem;
+            color: #4a627a;
+            letter-spacing: 0.3px;
+        }
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1f2a3e;
+            transition: 0.2s;
+            padding: 6px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* hero banner */
+        .hero-banner {
+            background: linear-gradient(97deg, #0a2b4e 0%, #1b4a6e 100%);
+            border-radius: 24px;
+            margin: 28px 0 32px;
+            padding: 2rem 2rem;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .hero-text h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .hero-text p {
+            max-width: 650px;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        .hero-badge {
+            background: rgba(255,255,240,0.15);
+            backdrop-filter: blur(2px);
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255,255,200,0.3);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 40px 0 20px 0;
+            border-left: 6px solid var(--accent-red);
+            padding-left: 18px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 28px;
+            margin: 1.5rem 0 2rem;
+        }
+        .tool-card {
+            background: var(--light-bg);
+            border-radius: 24px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--gray-border);
+            transition: all 0.25s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            border-color: #bdd3ff;
+        }
+        .tool-icon {
+            font-size: 2.4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+        .tool-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: #0f2c4e;
+        }
+        .tool-card p {
+            color: #4b5e7a;
+            font-size: 0.85rem;
+            margin-bottom: 1.3rem;
+            line-height: 1.45;
+        }
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef3fc;
+            padding: 0.45rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            transition: 0.2s;
+        }
+        .tool-link i {
+            font-size: 0.8rem;
+        }
+        .tool-link:hover {
+            background: #d4e2f5;
+            gap: 10px;
+            color: var(--accent-red);
+        }
+
+        .feature-banner {
+            display: flex;
+            flex-wrap: wrap;
+            background: #eef2fa;
+            border-radius: 2rem;
+            padding: 2rem 1.5rem;
+            margin: 2rem 0;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .feature-item {
+            text-align: center;
+            flex: 1;
+            min-width: 140px;
+        }
+        .feature-item i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+        .feature-item h4 {
+            margin-top: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .contact-section {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 2rem 0 2.5rem;
+            border: 1px solid var(--gray-border);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02);
+        }
+        .contact-section h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary-dark);
+        }
+        .contact-info {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafd;
+            padding: 0.6rem 1.5rem;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            border: 1px solid #e2edf7;
+        }
+        .contact-info-item i {
+            color: var(--accent-red);
+            font-size: 1.2rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: #fbfdff;
+            border: 1px solid #cbd5e1;
+            border-radius: 1.5rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
+        }
+        .btn-send {
+            background: var(--primary-dark);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn-send:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+        #formMessage {
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        .official-footer {
+            background: #0a1c2f;
+            color: #ccdbe9;
+            margin-top: 2rem;
+            padding: 2rem 0 1.5rem;
+            font-size: 0.8rem;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .footer-links a {
+            color: #bfd6ff;
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 0.8rem;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2d4a6e;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 780px) {
+            .container {
+                padding: 0 20px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-menu ul {
+                gap: 18px;
+            }
+            .hero-text h1 {
+                font-size: 1.4rem;
+            }
+            .top-banner .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .right-links {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- üst bilgi bandı (Türk bayrağı eklendi) -->
+<div class="top-banner">
+    <div class="container">
+        <div class="left-info">
+            <span><i class="fas fa-chalkboard-user"></i> Denem · Termodinamik Hesaplama Portalı</span>
+        </div>
+        <div class="right-links">
+            <!-- TÜRK BAYRAĞI ve TR seçeneği (sağ üst) -->
+            <a href="#"><span class="flag-icon">🇹🇷</span> TR</a>
+            <a href="#"><i class="fas fa-globe"></i> EN</a>
+            <a href="#"><i class="fas fa-info-circle"></i> Hakkımızda</a>
+            <a href="#"><i class="fas fa-envelope"></i> Destek</a>
+        </div>
+    </div>
+</div>
+
+<!-- ana header (Denem markası) -->
+<div class="main-header">
+    <div class="container header-wrapper">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-calculator"></i></div>
+            <div class="ministry-title">
+                <h2>Denem</h2>
+                <p>Termodinamik & Enerji Hesaplama Merkezi</p>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <ul>
+                <li><a href="#" class="active">Ana Sayfa</a></li>
+                <li><a href="#">Araçlar</a></li>
+                <li><a href="#">Dokümanlar</a></li>
+                <li><a href="#">Duyurular</a></li>
+                <li><a href="#contact">İletişim</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- hero banner -->
+    <div class="hero-banner">
+        <div class="hero-text">
+            <h1>Buhar Kazanı ve Termodinamik <br> Hesaplama Merkezi</h1>
+            <p>Yanma analizi, kazan verimi, türbin konfigürasyonu, ekonomizer, kondenser ve ileri mühendislik araçları. Endüstriyel standartlarda, ISO uyumlu hesaplamalar.</p>
+        </div>
+        <div class="hero-badge">
+            <i class="fas fa-chart-line"></i> Gerçek Zamanlı &nbsp;|&nbsp; <i class="fas fa-microchip"></i> ISO Birim Dönüşümleri
+        </div>
+    </div>
+
+    <!-- araçlar grid (12 adet) -->
+    <div class="section-title"><i class="fas fa-calculator"></i> Mühendislik Hesaplama Araçları</div>
+    <div class="tools-grid">
+        <!-- 1. Yakıt Analizi (gerçek dosyaya yönlendirildi) -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-fire"></i></div>
+            <h3>Yakıt Analizi</h3>
+            <p>Katı, sıvı, gaz yakıtların elementel analizi, üst/alt ısıl değer (MJ/kg, kcal/kg, kcal/Sm³), stokiyometrik hava, yanma ürünleri.</p>
+            <a href="yakıt_analizi_ son.html" class="tool-link"><i class="fas fa-flask"></i> İncele <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <!-- 2. Maliyet Hesabı -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-coins"></i></div>
+            <h3>Yakıt Maliyeti</h3>
+            <p>Kademeli fiyatlandırma, m³ / Sm³ seçeneği, özelleştirilebilir kademeler. Yıllık yakıt tüketimi maliyetini anında hesaplayın.</p>
+            <a href="#" class="tool-link" onclick="alert('Maliyet hesabı sayfası (maliyet hesap son.html)'); return false;"><i class="fas fa-calculator"></i> Hesapla</a>
+        </div>
+        <!-- 3. Kazan Verim Hesabı + Blöf -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-chart-simple"></i></div>
+            <h3>Kazan Verim Hesabı</h3>
+            <p>Baca gazı kayıpları, blöf kaybı, radyasyon-konveksiyon, ısı transfer yüzeyleri, fazla hava oranı, gerçek verim analizi.</p>
+            <a href="#" class="tool-link" onclick="alert('Kazan verim sayfası (verim son.html)'); return false;"><i class="fas fa-temperature-high"></i> Detaylı Analiz</a>
+        </div>
+        <!-- 4. HP Türbin & Ara Isıtıcı -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-fan"></i></div>
+            <h3>HP Türbin · Ara Isıtıcı</h3>
+            <p>Çoklu türbin konfigürasyonu, ara ısıtıcı sıralaması, buhar tablosu interpolasyonu, güç ve elektrik üretimi hesapları.</p>
+            <a href="#" class="tool-link" onclick="alert('Türbin & ara ısıtıcı (hp re lp.html)'); return false;"><i class="fas fa-microchip"></i> Simüle Et</a>
+        </div>
+        <!-- 5. Fırın Ekonomizeri -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-exchange-alt"></i></div>
+            <h3>Fırın Ekonomizeri</h3>
+            <p>Baca gazı ile hava veya su ısıtma, verim parametresi, fazla hava katsayısı, geri kazanılan termal güç (kW).</p>
+            <a href="#" class="tool-link" onclick="alert('Ekonomizer aracı (eko.html)'); return false;"><i class="fas fa-leaf"></i> Geri Kazanım</a>
+        </div>
+        <!-- 6. Kondenser / Isı Değiştirici -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-snowplow"></i></div>
+            <h3>Isı Değiştirici · Kondenser</h3>
+            <p>Manuel çıkış sıcaklığı desteği, farklı akışkanlar (su, hava, R134a, NH3), otomatik denge sıcaklığı, ısı transferi.</p>
+            <a href="#" class="tool-link" onclick="alert('Kondenser / ısı değiştirici (kondenser.html)'); return false;"><i class="fas fa-temperature-low"></i> Hesapla</a>
+        </div>
+        <!-- 7. Besi Suyu Hesabı -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-water"></i></div>
+            <h3>Besi Suyu Hesabı</h3>
+            <p>Doymuş su/buhar tablosu (A-5) ile kazan besleme suyu entalpisi, ısıtma gücü, kızgın buhar, çıkış parametreleri.</p>
+            <a href="#" class="tool-link" onclick="alert('Besi suyu sayfası (besi suyu son.html)'); return false;"><i class="fas fa-tint"></i> Termodinamik</a>
+        </div>
+        <!-- 8. Doğalgaz Fiyat Tahmini (Türkiye) -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Fiyat Tahmini · TR</h3>
+            <p>Türkiye doğalgaz kademeli fiyat projeksiyonu 2026-2028, dolar kuru, IMF enflasyon, TTF bazlı senaryo.</p>
+            <a href="#" class="tool-link" onclick="alert('Türkiye fiyat tahmini (tr tahmin.html)'); return false;"><i class="fas fa-lira-sign"></i> Tahmin Gör</a>
+        </div>
+        <!-- 9. Küresel Doğalgaz Fiyat Endeksi -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-globe-americas"></i></div>
+            <h3>Küresel Fiyat Endeksi</h3>
+            <p>2006-2026 arası Henry Hub, TTF, JKM, Afrika fiyatları. Kriz dönemleri ve arz-talep analizi.</p>
+            <a href="#" class="tool-link" onclick="alert('Geçmiş endeks (gecmis endeks.html)'); return false;"><i class="fas fa-chart-bar"></i> Veri Seti</a>
+        </div>
+        <!-- 10. Gelecek Tahmin (2026-2035) -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Doğalgaz Tahmini 2035</h3>
+            <p>ABD, Avrupa, Asya piyasaları için 10 yıllık projeksiyon, regresyon ve CAGR bazlı model.</p>
+            <a href="#" class="tool-link" onclick="alert('Gelecek tahmin (gelecek tahmin.html)'); return false;"><i class="fas fa-calendar-alt"></i> Uzun Vade</a>
+        </div>
+        <!-- 11. Yanma Hesabı (Yakıt & Baca) -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-fire-extinguisher"></i></div>
+            <h3>Yanma Hesabı</h3>
+            <p>Yakıt debisi, hava/yakıt oranı, baca gazı debisi, sıcaklık, kayıp oranı, çoklu birim desteği (m³, Sm³, kg).</p>
+            <a href="#" class="tool-link" onclick="alert('Yanma hesaplayıcı (yanma son.html)'); return false;"><i class="fas fa-burn"></i> Detaylı Yanma</a>
+        </div>
+        <!-- 12. Isı Değiştirici Pro -->
+        <div class="tool-card">
+            <div class="tool-icon"><i class="fas fa-chart-pie"></i></div>
+            <h3>Isı Değiştirici Pro</h3>
+            <p>Farklı akışkanlar, basınç birim seçenekleri, manuel çıkış kontrolü ve detaylı adım adım çözüm.</p>
+            <a href="#" class="tool-link" onclick="alert('Isı değiştirici (kondenser.html) ile aynı modül'); return false;"><i class="fas fa-arrows-alt-h"></i> Termal Analiz</a>
+        </div>
+    </div>
+
+    <!-- özellikler banner -->
+    <div class="feature-banner">
+        <div class="feature-item"><i class="fas fa-chart-line"></i><h4>Gerçek Zamanlı</h4></div>
+        <div class="feature-item"><i class="fas fa-exchange-alt"></i><h4>Birim Dönüşümü</h4></div>
+        <div class="feature-item"><i class="fas fa-database"></i><h4>Termodinamik Tablolar</h4></div>
+        <div class="feature-item"><i class="fas fa-shield-alt"></i><h4>Endüstri Standardı</h4></div>
+    </div>
+
+    <!-- iletişim bölümü (orijinal mail ve telefon) -->
+    <div id="contact" class="contact-section">
+        <h3><i class="fas fa-envelope-open-text"></i> İletişim & Teknik Destek</h3>
+        <div class="contact-info">
+            <div class="contact-info-item"><i class="fas fa-envelope"></i> derelioglu.mahmut@gmail.com</div>
+            <div class="contact-info-item"><i class="fas fa-phone-alt"></i> +90 535 014 60 98</div>
+        </div>
+        <form id="contactForm">
+            <div class="form-group">
+                <input type="text" id="contactName" placeholder="Adınız Soyadınız (Kurum / Şirket)" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="contactEmail" placeholder="E-posta adresiniz" required>
+            </div>
+            <div class="form-group">
+                <textarea id="contactMessage" placeholder="Mesajınızı yazın... (talep, teknik soru veya görüş)" required></textarea>
+            </div>
+            <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> Gönder</button>
+            <div id="formMessage"></div>
+        </form>
+    </div>
+</div>
+
+<!-- footer (Denem markalı) -->
+<footer class="official-footer">
+    <div class="container">
+        <div class="footer-inner">
+            <div><i class="fas fa-chart-simple"></i> Denem · Termodinamik Hesaplama Portalı</div>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Kullanım Koşulları</a>
+                <a href="#">Enerji Verimliliği</a>
+                <a href="#">Yardım</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <i class="fas fa-copyright"></i> 2026 Denem - Tüm hesaplamalar mühendislik prensiplerine dayanır. Bu portal, termodinamik analiz ve eğitim amaçlıdır.
+        </div>
+    </div>
+</footer>
+
+<script>
+    // tüm demo bağlantıları için (alert ile yönlendirme) - Yakıt Analizi kartı artık doğrudan dosyaya yönlendirildiği için bu script onu etkilemez.
+    const allDemoLinks = document.querySelectorAll('.tool-link');
+    allDemoLinks.forEach(link => {
+        // Sadece href="#" olan ve onclick içermeyen linklere alert ekle? Ancak mevcut linklerde onclick varsa zaten alert var. 
+        // Yakıt Analizi linkinin artık onclick'i yok, href dosya yoluna sahip, bu yüzden onu atlıyoruz.
+        if (link.getAttribute('href') === '#' && !link.hasAttribute('onclick')) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Bu araç tam sürümde aktiftir. İlgili HTML modülü (yanma son.html, kondenser.html vb.) ana dizinde bulunmaktadır.');
+            });
+        }
+    });
+
+    // navigasyon smooth scroll
+    document.querySelectorAll('.nav-menu a, .footer-links a, .top-banner a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const hash = this.getAttribute('href');
+            if (hash && hash.startsWith('#') && hash !== '#') {
+                e.preventDefault();
+                const target = document.querySelector(hash);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // iletişim formu simülasyonu
+    const contactForm = document.getElementById('contactForm');
+    const formMsgDiv = document.getElementById('formMessage');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const msg = document.getElementById('contactMessage').value.trim();
+            if (!name || !email || !msg) {
+                formMsgDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Lütfen tüm alanları eksiksiz doldurun.';
+                formMsgDiv.style.color = '#c0392b';
+                return;
+            }
+            formMsgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Mesajınız başarıyla iletilmiştir. En kısa sürede dönüş yapılacaktır.';
+            formMsgDiv.style.color = '#2e7d32';
+            contactForm.reset();
+            setTimeout(() => {
+                formMsgDiv.innerHTML = '';
+            }, 5000);
+        });
+    }
+</script>
+</body>
+</html>
