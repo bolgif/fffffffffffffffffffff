@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Yanma Hesabı | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ========= LIGHT MODE ========= */
+        :root {
+            --primary-dark: #0a2b4e;
+            --primary-blue: #1e3a5f;
+            --accent-red: #c62828;
+            --light-bg: #ffffff;
+            --gray-border: #e2e8f0;
+            --text-dark: #1e2a3a;
+            --text-muted: #4a627a;
+            --bg-body: #f5f7fc;
+            --bg-surface: #ffffff;
+            --bg-surface-secondary: #f8fafd;
+            --text-primary: #1f2a3e;
+            --text-secondary: #4a627a;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #eef3fc;
+            --footer-bg: #0a1c2f;
+            --footer-text: #ccdbe9;
+            --btn-primary-bg: #0a2b4e;
+            --btn-primary-hover: #c62828;
+            --sidebar-width: 280px;
+        }
+
+        /* ========= DARK MODE ========= */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-secondary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+            --btn-primary-bg: #1e293b;
+            --btn-primary-hover: #ef4444;
+            --primary-dark: #38bdf8;
+            --primary-blue: #7dd3fc;
+            --accent-red: #ef4444;
+            --gray-border: #334155;
+            --text-dark: #e2e8f0;
+            --text-muted: #94a3b8;
+            --light-bg: #1e293b;
+        }
+
+        /* Flex yapı */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========= SIDEBAR ========= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease, background 0.2s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--btn-primary-bg);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s;
+            width: fit-content;
+        }
+        .home-btn i { font-size: 1.2rem; }
+        .home-btn:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-menu {
+            padding: 16px;
+        }
+        .menu-group {
+            margin-bottom: 24px;
+        }
+        .menu-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .menu-link i {
+            width: 24px;
+            color: var(--primary-blue);
+        }
+        .menu-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+        .menu-link.active {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .menu-link.active i {
+            color: white;
+        }
+
+        /* Ana içerik alanı */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            width: 100%;
+        }
+        body.sidebar-open .main-content {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Menü butonu (header içinde) */
+        .menu-toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .menu-toggle-btn:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+
+        /* Ana header */
+        .main-header {
+            background: var(--bg-surface);
+            border-bottom: 3px solid var(--accent-red);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.2s ease;
+        }
+        .header-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            max-width: 100%;
+            margin: 0;
+            gap: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-title a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .brand-title a:hover {
+            color: var(--accent-red);
+        }
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: 0.2s;
+            padding: 6px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* Gece modu butonu */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            margin-left: 10px;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-surface-secondary);
+            color: var(--accent-red);
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0 32px;
+        }
+
+        /* İçerik alanı (hero banner yok) */
+        .content-section {
+            background: var(--bg-surface);
+            border-radius: 0;
+            margin: 2rem 0;
+            padding: 2rem 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-right: none;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--accent-red);
+            padding-left: 18px;
+        }
+
+        /* Input panel (yakıt analizindeki grid yapısı) */
+        .input-panel {
+            background: var(--bg-surface-secondary);
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+        .input-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-item label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .input-group input, .input-group select {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            transition: 0.2s;
+            outline: none;
+            width: 100%;
+        }
+        .input-group input {
+            flex: 2;
+        }
+        .input-group select {
+            flex: 1;
+            min-width: 90px;
+        }
+        .input-item input[type="number"]:not(.input-group input) {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+        .button-group {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+        .results h3 {
+            color: var(--primary-dark);
+            margin: 1rem 0 1rem;
+            font-weight: 600;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 1rem;
+            font-size: 1.2rem;
+        }
+        .results table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+        }
+        .results th {
+            background: var(--bg-surface-secondary);
+            color: var(--primary-dark);
+            font-weight: 600;
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+        .results td {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .results tr:last-child td {
+            border-bottom: none;
+        }
+        .error {
+            background: rgba(198, 40, 40, 0.1);
+            border-left: 5px solid var(--accent-red);
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 0.8rem;
+            color: var(--accent-red);
+            font-weight: 500;
+        }
+
+        footer.official-footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            margin-top: 2rem;
+            padding: 2rem 32px 1.5rem;
+            font-size: 0.8rem;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-links a {
+            color: var(--footer-text);
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 0.8rem;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 780px) {
+            .container, .header-wrapper, .content-section, .official-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .input-panel {
+                grid-template-columns: 1fr;
+            }
+            .nav-menu {
+                width: 100%;
+                overflow-x: auto;
+            }
+            .theme-toggle {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            .logo-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- SIDEBAR (Ana Sayfa butonu ve menü) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-group">
+                <div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi_ son.html" class="menu-link"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="#" class="menu-link" onclick="alert('Maliyet hesabı sayfası (maliyet hesap son.html)'); return false;"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası (verim son.html)'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Türbin & ara ısıtıcı (hp re lp.html)'); return false;"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="#" class="menu-link" onclick="alert('Ekonomizer aracı (eko.html)'); return false;"><i class="fas fa-exchange-alt"></i> Fırın Ekonomizeri</a>
+                <a href="#" class="menu-link" onclick="alert('Kondenser / ısı değiştirici (kondenser.html)'); return false;"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="#" class="menu-link" onclick="alert('Besi suyu sayfası (besi suyu son.html)'); return false;"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="#" class="menu-link active"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group">
+                <div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini (tr tahmin.html)'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Geçmiş endeks (gecmis endeks.html)'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin (gelecek tahmin.html)'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ANA İÇERİK -->
+    <main class="main-content" id="mainContent">
+        <!-- ana header -->
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area">
+                    <button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button>
+                    <div class="brand-title">
+                        <a href="index.html">Efficiency Crest</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="nav-menu">
+                        <ul>
+                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="#" class="active">Yanma Hesabı</a></li>
+                            <li><a href="#">Dokümanlar</a></li>
+                            <li><a href="#">Duyurular</a></li>
+                            <li><a href="index.html#contact">İletişim</a></li>
+                        </ul>
+                    </div>
+                    <button class="theme-toggle" id="themeToggleBtn" aria-label="Gece modu">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-fire-extinguisher"></i> Yanma Hesabı · Yakıt & Baca Gazı
+                </div>
+
+                <!-- Yanma hesaplama formu -->
+                <div class="yanma-calc">
+                    <div class="input-panel">
+                        <!-- Yakıt Debisi -->
+                        <div class="input-item">
+                            <label>Yakıt Debisi</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_fuelFlow" step="any" value="50">
+                                <select id="yanma_fuelFlowUnit">
+                                    <option value="m3h">m³/saat</option>
+                                    <option value="m3s">m³/saniye</option>
+                                    <option value="sm3h" selected>Sm³/saat</option>
+                                    <option value="sm3s">Sm³/saniye</option>
+                                    <option value="kgs">kg/saniye</option>
+                                    <option value="kgh">kg/saat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Yakıt Yoğunluğu -->
+                        <div class="input-item">
+                            <label>Yakıt Yoğunluğu</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_fuelDensity" step="any" value="850">
+                                <select id="yanma_fuelDensityUnit">
+                                    <option value="kgm3">kg/m³</option>
+                                    <option value="gcm3">g/cm³</option>
+                                    <option value="lbft3">lb/ft³</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Yakıt Özgül Isısı -->
+                        <div class="input-item">
+                            <label>Yakıt Özgül Isısı</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_fuelCp" step="any" value="2.2">
+                                <select id="yanma_fuelCpUnit">
+                                    <option value="kjkgk">kJ/kgK</option>
+                                    <option value="kcalkgc">kcal/kg°C</option>
+                                    <option value="btulbf">Btu/lb°F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Yakıt Giriş Sıcaklığı -->
+                        <div class="input-item">
+                            <label>Yakıt Giriş Sıcaklığı</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_fuelTin" step="any" value="20">
+                                <select id="yanma_fuelTinUnit">
+                                    <option value="c">°C</option>
+                                    <option value="f">°F</option>
+                                    <option value="k">K</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Yakıt Alt Isıl Değeri -->
+                        <div class="input-item">
+                            <label>Yakıt Alt Isıl Değeri</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_lhv" step="any" value="42000">
+                                <select id="yanma_lhvUnit">
+                                    <option value="kjkg">kJ/kg</option>
+                                    <option value="kcal/kg">kcal/kg</option>
+                                    <option value="btulb">Btu/lb</option>
+                                    <option value="kcalSm3">kcal/Sm³</option>
+                                    <option value="MJSm3">MJ/Sm³</option>
+                                    <option value="kJSm3">kJ/Sm³</option>
+                                    <option value="btuft3">Btu/ft³</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Hava/Yakıt Oranı -->
+                        <div class="input-item">
+                            <label>Hava/Yakıt Oranı</label>
+                            <div class="input-group">
+                                <input type="number" id="yanma_af" step="any" value="14">
+                                <select id="yanma_afUnit">
+                                    <option value="kgkg">kg/kg</option>
+                                    <option value="lblb">lb/lb</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Yanma Verimi (0-1) -->
+                        <div class="input-item">
+                            <label>Yanma Verimi (0-1)</label>
+                            <input type="number" id="yanma_combEff" step="0.01" min="0" max="1" value="0.9">
+                        </div>
+                        <!-- Baca Gazı Kayıp Oranı (0-1) -->
+                        <div class="input-item">
+                            <label>Baca Gazı Kayıp Oranı (0-1)</label>
+                            <input type="number" id="yanma_loss" step="0.01" min="0" max="1" value="0.08">
+                        </div>
+                        <div class="button-group">
+                            <button id="yanmaCalcBtn" class="btn-primary"><i class="fas fa-calculator"></i> Hesapla</button>
+                        </div>
+                    </div>
+
+                    <!-- Hata mesajı alanı -->
+                    <div id="yanma_fuelError" class="error" style="display: none;"></div>
+
+                    <!-- Sonuçlar tablosu (açıklama yazısı kaldırıldı) -->
+                    <div id="yanma_fuelResults" class="results" style="display: none;">
+                        <h3><i class="fas fa-chart-line"></i> Yanma & Baca Gazı Sonuçları</h3>
+                        <table>
+                            <tbody>
+                                <tr><th style="width:50%">Yakıt Kütlesel Debisi</th><td><span id="yanma_resFuelMass">0 kg/s</span></tr></tr>
+                                <tr><th>Yakıt Çıkış Sıcaklığı (giriş = çıkış)</th><td><span id="yanma_resFuelTout">0 °C</span></td></tr>
+                                <tr><th>Yanma Gücü (Q_yanma)</th><td><span id="yanma_resQcomb">0 kW</span></td></tr>
+                                <tr><th>Baca Gazı Kütlesel Debisi</th><td><span id="yanma_resFlueMass">0 kg/s</span></td></tr>
+                                <tr><th>Baca Gazı Hacimsel Debisi (çalışma şartlarında)</th><td><span id="yanma_resFlueVol">0 m³/h</span></td></tr>
+                                <tr><th>Baca Gazı Sıcaklığı</th><td><span id="yanma_resFlueTemp">0 °C</span></td></tr>
+                                <tr><th>Baca Gazı Ortalama Özgül Isısı (cp)</th><td><span id="yanma_resFlueCp">0 kJ/kgK</span></td></tr>
+                                <tr><th>Baca Gazı Yoğunluğu</th><td><span id="yanma_resFlueDens">0 kg/m³</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="official-footer">
+            <div class="footer-inner">
+                <div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div>
+                <div class="footer-links">
+                    <a href="#">Gizlilik</a>
+                    <a href="#">Kullanım Koşulları</a>
+                    <a href="#">Enerji Verimliliği</a>
+                    <a href="#">Yardım</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır. Bu portal, termodinamik analiz ve eğitim amaçlıdır.
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // ======================= YANMA HESABI =======================
+    const SM3_TO_NM3 = 273.15 / 288.15;
+    const NM3_TO_SM3 = 288.15 / 273.15;
+
+    function yanma_convertToSI(value, unit, type, densitySI) {
+        switch(type) {
+            case 'flow': 
+                switch(unit) {
+                    case 'm3h': case 'sm3h': return value / 3600 * densitySI;
+                    case 'm3s': case 'sm3s': return value * densitySI;
+                    case 'kgs': return value;
+                    case 'kgh': return value / 3600;
+                    default: return value;
+                }
+            case 'density':
+                switch(unit) {
+                    case 'kgm3': return value;
+                    case 'gcm3': return value*1000;
+                    case 'lbft3': return value*16.0185;
+                    default: return value;
+                }
+            case 'cp':
+                switch(unit) {
+                    case 'kjkgk': return value;
+                    case 'kcalkgc': return value*4.1868;
+                    case 'btulbf': return value*4.1868;
+                    default: return value;
+                }
+            case 'lhv':
+                switch(unit) {
+                    case 'kjkg': return value;
+                    case 'kcal/kg': return value*4.1868;
+                    case 'btulb': return value*2.326;
+                    case 'kcalSm3': if(densitySI<=0) throw new Error('Yoğunluk gerekli'); return value * NM3_TO_SM3 / densitySI * 4.1868;
+                    case 'MJSm3': if(densitySI<=0) throw new Error('Yoğunluk gerekli'); return value * 1000 * NM3_TO_SM3 / densitySI;
+                    case 'kJSm3': if(densitySI<=0) throw new Error('Yoğunluk gerekli'); return value * NM3_TO_SM3 / densitySI;
+                    case 'btuft3': if(densitySI<=0) throw new Error('Yoğunluk gerekli'); return value * 37.2589 / densitySI;
+                    default: return value;
+                }
+            default: return value;
+        }
+    }
+
+    function yanma_convertDensityToSI(value, unit) {
+        switch(unit) {
+            case 'kgm3': return value;
+            case 'gcm3': return value*1000;
+            case 'lbft3': return value*16.0185;
+            default: return value;
+        }
+    }
+
+    function yanma_convertTemperatureToC(value, unit) {
+        switch(unit) {
+            case 'c': return value;
+            case 'f': return (value-32)*5/9;
+            case 'k': return value-273.15;
+            default: return value;
+        }
+    }
+
+    function yanma_calculateFuel() {
+        try {
+            const fuelFlowUnit = document.getElementById('yanma_fuelFlowUnit').value;
+            const fuelDensityUnit = document.getElementById('yanma_fuelDensityUnit').value;
+            const fuelCpUnit = document.getElementById('yanma_fuelCpUnit').value;
+            const fuelTinUnit = document.getElementById('yanma_fuelTinUnit').value;
+            const lhvUnit = document.getElementById('yanma_lhvUnit').value;
+            let fuelFlow = parseFloat(document.getElementById('yanma_fuelFlow').value);
+            let fuelDensity = parseFloat(document.getElementById('yanma_fuelDensity').value);
+            let fuelCp = parseFloat(document.getElementById('yanma_fuelCp').value);
+            let fuelTin = parseFloat(document.getElementById('yanma_fuelTin').value);
+            let lhv = parseFloat(document.getElementById('yanma_lhv').value);
+            let af = parseFloat(document.getElementById('yanma_af').value);
+            const combEff = parseFloat(document.getElementById('yanma_combEff').value);
+            const loss = parseFloat(document.getElementById('yanma_loss').value);
+            
+            if(isNaN(fuelFlow)||isNaN(fuelDensity)||isNaN(fuelCp)||isNaN(fuelTin)||isNaN(lhv)||isNaN(af)||isNaN(combEff)||isNaN(loss)) 
+                throw new Error('Tüm alanları geçerli sayısal değerlerle doldurun.');
+            
+            const densitySI = yanma_convertDensityToSI(fuelDensity, fuelDensityUnit);
+            let m_fuel;
+            switch(fuelFlowUnit) {
+                case 'm3h': case 'sm3h': m_fuel = (fuelFlow/3600) * densitySI; break;
+                case 'm3s': case 'sm3s': m_fuel = fuelFlow * densitySI; break;
+                case 'kgs': m_fuel = fuelFlow; break;
+                case 'kgh': m_fuel = fuelFlow/3600; break;
+                default: m_fuel = fuelFlow;
+            }
+            const cpSI = yanma_convertToSI(fuelCp, fuelCpUnit, 'cp', densitySI);
+            const tinC = yanma_convertTemperatureToC(fuelTin, fuelTinUnit);
+            const lhvSI = yanma_convertToSI(lhv, lhvUnit, 'lhv', densitySI);
+            
+            if(m_fuel<=0 || densitySI<=0 || cpSI<=0 || lhvSI<=0 || af<=0 || combEff<=0 || combEff>1 || loss<0 || loss>1) 
+                throw new Error('Geçersiz değer (negatif veya sıfır) veya verim/kayıp aralık dışında.');
+            
+            const Q_comb = m_fuel * lhvSI * combEff;
+            const T_out = tinC;
+            const m_flue = m_fuel * (1 + af);
+            let cp_est = 1.0;
+            let T_est = tinC + (loss * Q_comb) / (m_flue * cp_est);
+            cp_est = 1.0 + 0.0002 * (T_est - 20);
+            T_est = tinC + (loss * Q_comb) / (m_flue * cp_est);
+            cp_est = 1.0 + 0.0002 * (T_est - 20);
+            T_est = tinC + (loss * Q_comb) / (m_flue * cp_est);
+            const T_flue = T_est;
+            const cp_flue = cp_est;
+            const T_kelvin = T_flue + 273.15;
+            const rho_flue = (1.0 * 29) / (0.08314 * T_kelvin);
+            const vol_flue = (m_flue / rho_flue) * 3600;
+            
+            document.getElementById('yanma_resFuelMass').innerText = m_fuel.toFixed(4) + ' kg/s';
+            document.getElementById('yanma_resFuelTout').innerText = T_out.toFixed(2) + ' °C';
+            document.getElementById('yanma_resQcomb').innerText = (Q_comb/1000).toFixed(2) + ' kW';
+            document.getElementById('yanma_resFlueMass').innerText = m_flue.toFixed(4) + ' kg/s';
+            document.getElementById('yanma_resFlueVol').innerText = vol_flue.toFixed(2) + ' m³/h';
+            document.getElementById('yanma_resFlueTemp').innerText = T_flue.toFixed(2) + ' °C';
+            document.getElementById('yanma_resFlueCp').innerText = cp_flue.toFixed(4) + ' kJ/kgK';
+            document.getElementById('yanma_resFlueDens').innerText = rho_flue.toFixed(3) + ' kg/m³';
+            
+            document.getElementById('yanma_fuelResults').style.display = 'block';
+            const errorDiv = document.getElementById('yanma_fuelError');
+            errorDiv.style.display = 'none';
+            errorDiv.innerText = '';
+        } catch(e) {
+            const errorDiv = document.getElementById('yanma_fuelError');
+            errorDiv.innerText = e.message;
+            errorDiv.style.display = 'block';
+            document.getElementById('yanma_fuelResults').style.display = 'none';
+        }
+    }
+
+    // ========== SIDEBAR & DARK MODE & EVENT LISTENERS ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // menü aç/kapa
+        const menuBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const bodyEl = document.body;
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                bodyEl.classList.toggle('sidebar-open');
+            });
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnBtn = menuBtn.contains(event.target);
+                if (!isClickInsideSidebar && !isClickOnBtn && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    bodyEl.classList.remove('sidebar-open');
+                }
+            });
+        }
+
+        // gece modu
+        const themeToggle = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggle.querySelector('i');
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isDark) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Yanma hesaplama tetikleyicileri
+        const calcBtn = document.getElementById('yanmaCalcBtn');
+        if (calcBtn) calcBtn.addEventListener('click', yanma_calculateFuel);
+        const inputs = document.querySelectorAll('#yanma_fuelFlow, #yanma_fuelFlowUnit, #yanma_fuelDensity, #yanma_fuelDensityUnit, #yanma_fuelCp, #yanma_fuelCpUnit, #yanma_fuelTin, #yanma_fuelTinUnit, #yanma_lhv, #yanma_lhvUnit, #yanma_af, #yanma_afUnit, #yanma_combEff, #yanma_loss');
+        inputs.forEach(el => el.addEventListener('change', yanma_calculateFuel));
+        inputs.forEach(el => el.addEventListener('input', yanma_calculateFuel));
+        yanma_calculateFuel();
+    });
+</script>
+</body>
+</html>

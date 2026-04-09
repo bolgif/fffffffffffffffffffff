@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ekonomizer · Reküparatör | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ========= LIGHT MODE ========= */
+        :root {
+            --primary-dark: #0a2b4e;
+            --primary-blue: #1e3a5f;
+            --accent-red: #c62828;
+            --light-bg: #ffffff;
+            --gray-border: #e2e8f0;
+            --text-dark: #1e2a3a;
+            --text-muted: #4a627a;
+            --bg-body: #f5f7fc;
+            --bg-surface: #ffffff;
+            --bg-surface-secondary: #f8fafd;
+            --text-primary: #1f2a3e;
+            --text-secondary: #4a627a;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #eef3fc;
+            --footer-bg: #0a1c2f;
+            --footer-text: #ccdbe9;
+            --btn-primary-bg: #0a2b4e;
+            --btn-primary-hover: #c62828;
+            --sidebar-width: 280px;
+        }
+
+        /* ========= DARK MODE ========= */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-secondary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+            --btn-primary-bg: #1e293b;
+            --btn-primary-hover: #ef4444;
+            --primary-dark: #38bdf8;
+            --primary-blue: #7dd3fc;
+            --accent-red: #ef4444;
+            --gray-border: #334155;
+            --text-dark: #e2e8f0;
+            --text-muted: #94a3b8;
+            --light-bg: #1e293b;
+        }
+
+        /* Flex yapı */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========= SIDEBAR ========= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease, background 0.2s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--btn-primary-bg);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s;
+            width: fit-content;
+        }
+        .home-btn i { font-size: 1.2rem; }
+        .home-btn:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-menu {
+            padding: 16px;
+        }
+        .menu-group {
+            margin-bottom: 24px;
+        }
+        .menu-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .menu-link i {
+            width: 24px;
+            color: var(--primary-blue);
+        }
+        .menu-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+        .menu-link.active {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .menu-link.active i {
+            color: white;
+        }
+
+        /* Ana içerik alanı */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            width: 100%;
+        }
+        body.sidebar-open .main-content {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Menü butonu */
+        .menu-toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .menu-toggle-btn:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+
+        /* Ana header */
+        .main-header {
+            background: var(--bg-surface);
+            border-bottom: 3px solid var(--accent-red);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.2s ease;
+        }
+        .header-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            max-width: 100%;
+            margin: 0;
+            gap: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-title a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .brand-title a:hover {
+            color: var(--accent-red);
+        }
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: 0.2s;
+            padding: 6px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* Gece modu butonu */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            margin-left: 10px;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-surface-secondary);
+            color: var(--accent-red);
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0 32px;
+        }
+
+        /* İçerik alanı */
+        .content-section {
+            background: var(--bg-surface);
+            border-radius: 0;
+            margin: 2rem 0;
+            padding: 2rem 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-right: none;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--accent-red);
+            padding-left: 18px;
+        }
+
+        /* Ekonomizer özel stilleri */
+        .exchange-calc {
+            background: var(--bg-surface-secondary);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        .side-panels {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .panel {
+            flex: 1 1 350px;
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+        }
+        .panel h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 0.8rem;
+        }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-surface-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 0.2rem;
+        }
+        .input-row input, .input-row select {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text-primary);
+        }
+        .input-row input { flex: 2; min-width: 0; }
+        .input-row select { flex: 1; background: var(--bg-surface); border-radius: 1rem; cursor: pointer; }
+        .selector-group {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--border-color);
+        }
+        .selector-group label { font-weight: 700; color: var(--primary-dark); }
+        .selector-group select { padding: 0.4rem 1rem; border-radius: 2rem; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-primary); }
+        .button-row {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: var(--btn-primary-bg);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+        .btn:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-surface-secondary); color: var(--primary-dark); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--sidebar-hover); transform: translateY(-2px); }
+        .results {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        .results h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 0.8rem;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .result-item .value { font-weight: 700; color: var(--primary-dark); }
+        .result-highlight {
+            background: var(--bg-surface-secondary);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin: 1rem 0;
+        }
+        .warning { color: var(--accent-red); background: rgba(198,40,40,0.1); padding: 0.5rem 1rem; border-radius: 1rem; margin: 1rem 0; text-align: center; }
+        .info-note {
+            background: var(--bg-surface-secondary);
+            border-left: 5px solid var(--accent-red);
+            border-radius: 1rem;
+            padding: 0.6rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        footer.official-footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            margin-top: 2rem;
+            padding: 2rem 32px 1.5rem;
+            font-size: 0.8rem;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-links a {
+            color: var(--footer-text);
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 0.8rem;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 780px) {
+            .container, .header-wrapper, .content-section, .official-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .side-panels {
+                flex-direction: column;
+            }
+            .nav-menu {
+                width: 100%;
+                overflow-x: auto;
+            }
+            .theme-toggle {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            .logo-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-group">
+                <div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi_ son.html" class="menu-link"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="#" class="menu-link" onclick="alert('Maliyet hesabı sayfası (maliyet hesap son.html)'); return false;"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası (verim son.html)'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Türbin & ara ısıtıcı (hp re lp.html)'); return false;"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="#" class="menu-link active"><i class="fas fa-exchange-alt"></i> Ekonomizer · Reküparatör</a>
+                <a href="#" class="menu-link" onclick="alert('Kondenser / ısı değiştirici (kondenser.html)'); return false;"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="#" class="menu-link" onclick="alert('Besi suyu sayfası (besi suyu son.html)'); return false;"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Yanma hesaplayıcı (yanma son.html)'); return false;"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group">
+                <div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini (tr tahmin.html)'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Geçmiş endeks (gecmis endeks.html)'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin (gelecek tahmin.html)'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ANA İÇERİK -->
+    <main class="main-content" id="mainContent">
+        <!-- ana header -->
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area">
+                    <button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button>
+                    <div class="brand-title">
+                        <a href="index.html">Efficiency Crest</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="nav-menu">
+                        <ul>
+                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="#" class="active">Ekonomizer · Reküparatör</a></li>
+                            <li><a href="#">Dokümanlar</a></li>
+                            <li><a href="#">Duyurular</a></li>
+                            <li><a href="index.html#contact">İletişim</a></li>
+                        </ul>
+                    </div>
+                    <button class="theme-toggle" id="themeToggleBtn" aria-label="Gece modu">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-exchange-alt"></i> Ekonomizer · Reküparatör (Atık Isı Geri Kazanımı)
+                </div>
+                <div class="exchange-calc">
+                    <div class="selector-group">
+                        <label><i class="fas fa-tint"></i> Isıtılan akışkan tipi:</label>
+                        <select id="fluidChoice">
+                            <option value="air" selected>🌬️ Hava (brülör / kurutma)</option>
+                            <option value="water">💧 Su (kazan besleme / proses)</option>
+                        </select>
+                        <span style="font-size:0.8rem;">Seçiminize göre cp ve yoğunluk değişir.</span>
+                    </div>
+                    <div class="side-panels">
+                        <div class="panel">
+                            <h2><i class="fas fa-smog"></i> Baca Gazı (Sıcak akışkan)</h2>
+                            <div class="input-group"><label>Giriş sıcaklığı</label><div class="input-row"><input type="number" id="T_flue_in" value="320"><select id="T_flue_in_unit"><option value="c" selected>°C</option><option value="f">°F</option><option value="k">K</option></select></div></div>
+                            <div class="input-group"><label>Debi</label><div class="input-row"><input type="number" id="m_flue" value="8.5"><select id="m_flue_unit"><option value="kgs" selected>kg/s</option><option value="kgh">kg/h</option><option value="tonh">ton/h</option><option value="lbh">lb/h</option><option value="lbs">lb/s</option><option value="m3h">m³/h</option><option value="sm3h">Sm³/h</option></select></div></div>
+                            <div class="input-group"><label>O₂ içeriği (%)</label><div class="input-row"><input type="number" id="o2_percent" value="3.5"><span>%</span></div></div>
+                            <div class="input-group"><label>cp (kJ/kgK)</label><div class="input-row"><input type="number" id="cp_flue" value="1.05"><span>kJ/kgK</span></div></div>
+                        </div>
+                        <div class="panel" id="heatedFluidPanel">
+                            <h2 id="heatedTitle"><i class="fas fa-wind"></i> Hava Akışı (ısıtılacak)</h2>
+                            <div class="input-group"><label id="flowLabel">Debi</label><div class="input-row"><input type="number" id="m_heated" value="12.0"><select id="m_heated_unit"><option value="kgs" selected>kg/s</option><option value="kgh">kg/h</option><option value="tonh">ton/h</option><option value="lbh">lb/h</option><option value="lbs">lb/s</option><option value="m3h">m³/h</option><option value="sm3h">Sm³/h</option></select></div></div>
+                            <div class="input-group"><label>Giriş sıcaklığı</label><div class="input-row"><input type="number" id="T_heated_in" value="25"><select id="T_heated_in_unit"><option value="c" selected>°C</option><option value="f">°F</option><option value="k">K</option></select></div></div>
+                            <div class="input-group"><label>Özgül ısı cp (kJ/kgK)</label><div class="input-row"><input type="number" id="cp_heated" value="1.005"><span>kJ/kgK</span></div></div>
+                            <div class="input-group"><label>Ekonomizer verimi (ε)</label><div class="input-row"><input type="number" id="eff_economizer" value="0.72"><select id="eff_unit"><option value="ratio" selected>0-1</option><option value="percent">%</option></select></div></div>
+                        </div>
+                    </div>
+                    <div class="button-row">
+                        <button class="btn" id="calculateBtn"><i class="fas fa-calculator"></i> Hesapla & Analiz</button>
+                        <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo-alt"></i> Sıfırla</button>
+                    </div>
+                    <div class="results">
+                        <h3>📈 Ekonomizer Performans Sonuçları</h3>
+                        <div class="result-item"><span>🔥 Baca gazı ısı kapasitesi (C)</span><span class="value" id="C_flue">-</span></div>
+                        <div class="result-item"><span id="heatedCapLabel">🌬️ Hava ısı kapasitesi (C)</span><span class="value" id="C_heated">-</span></div>
+                        <div class="result-item"><span id="transferLabel">♨️ Havaya aktarılan enerji (Q)</span><span class="value" id="Q_transfer">-</span></div>
+                        <div class="result-item"><span id="outTempLabel">🌡️ Isıtılan akışkan çıkış sıcaklığı</span><span class="value" id="T_heated_out">-</span></div>
+                        <div class="result-item"><span>🌫️ Baca gazı çıkış sıcaklığı</span><span class="value" id="T_flue_out">-</span></div>
+                        <div class="result-item"><span>⚙️ Kullanılan verim</span><span class="value" id="eff_used">-</span></div>
+                        <div class="result-item"><span>🌿 Fazla hava katsayısı λ</span><span class="value" id="lambda_val">-</span></div>
+                        <div class="result-highlight" id="Q_highlight">-</div>
+                        <div id="errorMsg" class="warning" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="official-footer">
+            <div class="footer-inner">
+                <div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div>
+                <div class="footer-links">
+                    <a href="#">Gizlilik</a>
+                    <a href="#">Kullanım Koşulları</a>
+                    <a href="#">Enerji Verimliliği</a>
+                    <a href="#">Yardım</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır. Bu portal, termodinamik analiz ve eğitim amaçlıdır.
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    (function() {
+        const DEFAULTS = { air: { cp: 1.005, density: 1.2, name: 'Hava', icon: '🌬️' }, water: { cp: 4.18, density: 1000, name: 'Su', icon: '💧' } };
+        let currentFluid = 'air';
+        const fluidChoice = document.getElementById('fluidChoice');
+        const heatedTitle = document.getElementById('heatedTitle');
+        const flowLabel = document.getElementById('flowLabel');
+        const cpHeatedInput = document.getElementById('cp_heated');
+        const heatedCapLabel = document.getElementById('heatedCapLabel');
+        const transferLabel = document.getElementById('transferLabel');
+        const outTempLabel = document.getElementById('outTempLabel');
+        
+        function updateUIBasedOnFluid() {
+            const data = DEFAULTS[currentFluid];
+            heatedTitle.innerHTML = `<i class="fas ${currentFluid==='air'?'fa-wind':'fa-tint'}"></i> ${data.name} Akışı (ısıtılacak)`;
+            flowLabel.innerText = `${data.name} debisi`;
+            cpHeatedInput.value = data.cp;
+            heatedCapLabel.innerHTML = `${data.icon} ${data.name} ısı kapasitesi (C)`;
+            transferLabel.innerHTML = `♨️ ${data.name}'ya aktarılan enerji (Q)`;
+            outTempLabel.innerHTML = `🌡️ Isıtılan akışkan (${data.name}) çıkış sıcaklığı`;
+        }
+        fluidChoice.addEventListener('change', (e) => { currentFluid = e.target.value; updateUIBasedOnFluid(); });
+        
+        function convertFlowToKgS(val, unit, density) { 
+            if(isNaN(val)) return 0;
+            switch(unit){
+                case'kgs':return val;
+                case'kgh':return val/3600;
+                case'tonh':return val*1000/3600;
+                case'lbh':return val*0.453592/3600;
+                case'lbs':return val*0.453592;
+                case'm3h':return val*density/3600;
+                case'sm3h':return val*density/3600;
+                default:return val;
+            }
+        }
+        function convertTempToC(val, unit) { 
+            if(isNaN(val)) return 0;
+            if(unit==='c')return val;
+            if(unit==='f')return(val-32)*5/9;
+            if(unit==='k')return val-273.15;
+            return val;
+        }
+        function convertCToTarget(celsius, targetUnit) { 
+            if(targetUnit==='c')return celsius;
+            if(targetUnit==='f')return celsius*9/5+32;
+            if(targetUnit==='k')return celsius+273.15;
+            return celsius; 
+        }
+        function formatNumber(val, dec=2) { return val.toFixed(dec); }
+        function getCapacityUnit(unitHot, unitCold) { return (unitHot==='k'||unitCold==='k')?'kW/K':'kW/°C'; }
+        
+        function calculate() {
+            document.getElementById('errorMsg').style.display = 'none';
+            let T_flue_in_val = parseFloat(document.getElementById('T_flue_in').value);
+            let T_flue_in_unit = document.getElementById('T_flue_in_unit').value;
+            let T_flue_in_C = convertTempToC(T_flue_in_val, T_flue_in_unit);
+            let m_flue_val = parseFloat(document.getElementById('m_flue').value);
+            let m_flue_unit = document.getElementById('m_flue_unit').value;
+            let cp_flue = parseFloat(document.getElementById('cp_flue').value);
+            let o2 = parseFloat(document.getElementById('o2_percent').value);
+            let fluid = currentFluid;
+            let densityHeated = DEFAULTS[fluid].density;
+            let m_heated_val = parseFloat(document.getElementById('m_heated').value);
+            let m_heated_unit = document.getElementById('m_heated_unit').value;
+            let cp_heated = parseFloat(document.getElementById('cp_heated').value);
+            let T_heated_in_val = parseFloat(document.getElementById('T_heated_in').value);
+            let T_heated_in_unit = document.getElementById('T_heated_in_unit').value;
+            let T_heated_in_C = convertTempToC(T_heated_in_val, T_heated_in_unit);
+            let eff_val = parseFloat(document.getElementById('eff_economizer').value);
+            let eff_type = document.getElementById('eff_unit').value;
+            let efficiency = eff_type === 'percent' ? eff_val/100 : eff_val;
+            if(efficiency<0) efficiency=0; if(efficiency>1) efficiency=1;
+            
+            if(isNaN(m_flue_val)||m_flue_val<=0||isNaN(m_heated_val)||m_heated_val<=0){
+                document.getElementById('errorMsg').innerHTML='Hata: Debiler pozitif olmalı.'; document.getElementById('errorMsg').style.display='block'; return;
+            }
+            if(T_flue_in_C <= T_heated_in_C){
+                document.getElementById('errorMsg').innerHTML='Hata: Baca gazı giriş sıcaklığı, ısıtılacak akışkan girişinden büyük olmalı.'; document.getElementById('errorMsg').style.display='block'; return;
+            }
+            let m_flue_kg_s = convertFlowToKgS(m_flue_val, m_flue_unit, 1.3);
+            let m_heated_kg_s = convertFlowToKgS(m_heated_val, m_heated_unit, densityHeated);
+            if(m_flue_kg_s<=0||m_heated_kg_s<=0){
+                document.getElementById('errorMsg').innerHTML='Hata: Dönüşüm sonrası debi sıfır, birimleri kontrol edin.'; document.getElementById('errorMsg').style.display='block'; return;
+            }
+            let C_flue = m_flue_kg_s * cp_flue;
+            let C_heated = m_heated_kg_s * cp_heated;
+            let T_heated_out_C = T_heated_in_C + efficiency * (T_flue_in_C - T_heated_in_C);
+            let Q = C_heated * (T_heated_out_C - T_heated_in_C);
+            if(Q<0) Q=0;
+            let T_flue_out_C = T_flue_in_C - (Q / C_flue);
+            if(T_flue_out_C < T_heated_in_C) T_flue_out_C = T_heated_in_C;
+            let lambda = (o2>=21)?99:21/(21-o2);
+            if(isNaN(lambda)||o2<0) lambda=1;
+            let capacityUnit = getCapacityUnit(T_flue_in_unit, T_heated_in_unit);
+            let T_heated_out_display = convertCToTarget(T_heated_out_C, T_heated_in_unit);
+            let T_flue_out_display = convertCToTarget(T_flue_out_C, T_flue_in_unit);
+            let heatedOutUnit = (T_heated_in_unit==='c'?'°C':(T_heated_in_unit==='f'?'°F':'K'));
+            let flueOutUnit = (T_flue_in_unit==='c'?'°C':(T_flue_in_unit==='f'?'°F':'K'));
+            
+            document.getElementById('C_flue').innerHTML = formatNumber(C_flue,3)+' '+capacityUnit;
+            document.getElementById('C_heated').innerHTML = formatNumber(C_heated,3)+' '+capacityUnit;
+            document.getElementById('Q_transfer').innerHTML = formatNumber(Q,2)+' kW';
+            document.getElementById('T_heated_out').innerHTML = formatNumber(T_heated_out_display,2)+' '+heatedOutUnit;
+            document.getElementById('T_flue_out').innerHTML = formatNumber(T_flue_out_display,2)+' '+flueOutUnit;
+            document.getElementById('eff_used').innerHTML = (efficiency*100).toFixed(1)+' %';
+            document.getElementById('lambda_val').innerHTML = lambda.toFixed(3);
+            document.getElementById('Q_highlight').innerHTML = formatNumber(Q,2)+' kW';
+        }
+        
+        function resetFields() {
+            document.getElementById('T_flue_in').value='320'; document.getElementById('T_flue_in_unit').value='c';
+            document.getElementById('m_flue').value='8.5'; document.getElementById('m_flue_unit').value='kgs';
+            document.getElementById('cp_flue').value='1.05'; document.getElementById('o2_percent').value='3.5';
+            currentFluid='air'; fluidChoice.value='air'; updateUIBasedOnFluid();
+            document.getElementById('m_heated').value='12.0'; document.getElementById('m_heated_unit').value='kgs';
+            document.getElementById('T_heated_in').value='25'; document.getElementById('T_heated_in_unit').value='c';
+            document.getElementById('cp_heated').value='1.005'; document.getElementById('eff_economizer').value='0.72';
+            document.getElementById('eff_unit').value='ratio';
+            const resultIds=['C_flue','C_heated','Q_transfer','T_heated_out','T_flue_out','eff_used','lambda_val','Q_highlight'];
+            resultIds.forEach(id=>document.getElementById(id).innerHTML='-');
+            document.getElementById('errorMsg').style.display='none';
+            calculate();
+        }
+        
+        document.getElementById('calculateBtn').addEventListener('click', calculate);
+        document.getElementById('resetBtn').addEventListener('click', resetFields);
+        
+        // ========== SIDEBAR & DARK MODE ==========
+        const menuBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const bodyEl = document.body;
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                bodyEl.classList.toggle('sidebar-open');
+            });
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnBtn = menuBtn.contains(event.target);
+                if (!isClickInsideSidebar && !isClickOnBtn && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    bodyEl.classList.remove('sidebar-open');
+                }
+            });
+        }
+        
+        const themeToggle = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggle.querySelector('i');
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isDark) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        window.addEventListener('load', resetFields);
+    })();
+</script>
+</body>
+</html>

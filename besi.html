@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Besi Suyu Hesabı | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ========= LIGHT MODE ========= */
+        :root {
+            --primary-dark: #0a2b4e;
+            --primary-blue: #1e3a5f;
+            --accent-red: #c62828;
+            --light-bg: #ffffff;
+            --gray-border: #e2e8f0;
+            --text-dark: #1e2a3a;
+            --text-muted: #4a627a;
+            --bg-body: #f5f7fc;
+            --bg-surface: #ffffff;
+            --bg-surface-secondary: #f8fafd;
+            --text-primary: #1f2a3e;
+            --text-secondary: #4a627a;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #eef3fc;
+            --footer-bg: #0a1c2f;
+            --footer-text: #ccdbe9;
+            --btn-primary-bg: #0a2b4e;
+            --btn-primary-hover: #c62828;
+            --sidebar-width: 280px;
+        }
+
+        /* ========= DARK MODE ========= */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-secondary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+            --btn-primary-bg: #1e293b;
+            --btn-primary-hover: #ef4444;
+            --primary-dark: #38bdf8;
+            --primary-blue: #7dd3fc;
+            --accent-red: #ef4444;
+            --gray-border: #334155;
+            --text-dark: #e2e8f0;
+            --text-muted: #94a3b8;
+            --light-bg: #1e293b;
+        }
+
+        /* Flex yapı */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========= SIDEBAR ========= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease, background 0.2s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--btn-primary-bg);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s;
+            width: fit-content;
+        }
+        .home-btn i { font-size: 1.2rem; }
+        .home-btn:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-menu {
+            padding: 16px;
+        }
+        .menu-group {
+            margin-bottom: 24px;
+        }
+        .menu-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .menu-link i {
+            width: 24px;
+            color: var(--primary-blue);
+        }
+        .menu-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+        .menu-link.active {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .menu-link.active i {
+            color: white;
+        }
+
+        /* Ana içerik alanı */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            width: 100%;
+        }
+        body.sidebar-open .main-content {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Menü butonu */
+        .menu-toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .menu-toggle-btn:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+
+        /* Ana header */
+        .main-header {
+            background: var(--bg-surface);
+            border-bottom: 3px solid var(--accent-red);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.2s ease;
+        }
+        .header-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            max-width: 100%;
+            margin: 0;
+            gap: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-title a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .brand-title a:hover {
+            color: var(--accent-red);
+        }
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: 0.2s;
+            padding: 6px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* Gece modu butonu */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            margin-left: 10px;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-surface-secondary);
+            color: var(--accent-red);
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0 32px;
+        }
+
+        /* İçerik alanı */
+        .content-section {
+            background: var(--bg-surface);
+            border-radius: 0;
+            margin: 2rem 0;
+            padding: 2rem 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-right: none;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--accent-red);
+            padding-left: 18px;
+        }
+
+        /* Besi suyu hesabı stilleri */
+        .besi-calc .main-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .besi-calc .input-panel {
+            flex: 1.2;
+            background: var(--bg-surface-secondary);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        .besi-calc .output-panel {
+            flex: 1;
+            background: var(--bg-surface-secondary);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        .besi-calc .input-group {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .besi-calc .input-group label { 
+            font-weight: 600; 
+            margin-bottom: 0.3rem; 
+            font-size: 0.85rem; 
+            color: var(--primary-dark); 
+        }
+        .besi-calc .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .besi-calc .input-wrapper input { 
+            flex: 2; 
+            padding: 0.5rem; 
+            border: 1px solid var(--border-color); 
+            border-radius: 1rem; 
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+        .besi-calc .input-wrapper select { 
+            flex: 1; 
+            padding: 0.5rem; 
+            border: 1px solid var(--border-color); 
+            border-radius: 1rem; 
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+        .besi-calc .radio-group { 
+            display: flex; 
+            gap: 1rem; 
+            margin: 1rem 0; 
+        }
+        .besi-calc button {
+            background: var(--btn-primary-bg);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .besi-calc button:hover { 
+            background: var(--btn-primary-hover); 
+            transform: translateY(-2px);
+        }
+        .result-card {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .result-value { 
+            font-weight: 700; 
+            color: var(--primary-dark); 
+        }
+        .doyma-card {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        .doyma-card strong {
+            color: var(--primary-dark);
+        }
+        .doyma-card div {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        footer.official-footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            margin-top: 2rem;
+            padding: 2rem 32px 1.5rem;
+            font-size: 0.8rem;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-links a {
+            color: var(--footer-text);
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 0.8rem;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 780px) {
+            .container, .header-wrapper, .content-section, .official-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .besi-calc .main-panel {
+                flex-direction: column;
+            }
+            .nav-menu {
+                width: 100%;
+                overflow-x: auto;
+            }
+            .theme-toggle {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            .logo-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-group">
+                <div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi_ son.html" class="menu-link"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="#" class="menu-link" onclick="alert('Maliyet hesabı sayfası (maliyet hesap son.html)'); return false;"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası (verim son.html)'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Türbin & ara ısıtıcı (hp re lp.html)'); return false;"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="#" class="menu-link" onclick="alert('Ekonomizer aracı (eko.html)'); return false;"><i class="fas fa-exchange-alt"></i> Fırın Ekonomizeri</a>
+                <a href="#" class="menu-link" onclick="alert('Kondenser / ısı değiştirici (kondenser.html)'); return false;"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="#" class="menu-link active"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Yanma hesaplayıcı (yanma son.html)'); return false;"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group">
+                <div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini (tr tahmin.html)'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Geçmiş endeks (gecmis endeks.html)'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin (gelecek tahmin.html)'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ANA İÇERİK -->
+    <main class="main-content" id="mainContent">
+        <!-- ana header -->
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area">
+                    <button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button>
+                    <div class="brand-title">
+                        <a href="index.html">Efficiency Crest</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="nav-menu">
+                        <ul>
+                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="#" class="active">Besi Suyu Hesabı</a></li>
+                            <li><a href="#">Dokümanlar</a></li>
+                            <li><a href="#">Duyurular</a></li>
+                            <li><a href="index.html#contact">İletişim</a></li>
+                        </ul>
+                    </div>
+                    <button class="theme-toggle" id="themeToggleBtn" aria-label="Gece modu">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-tint"></i> Besi Suyu Hesabı · Kazan Besleme
+                </div>
+                <div class="besi-calc">
+                    <div class="main-panel">
+                        <div class="input-panel">
+                            <div class="input-group">
+                                <label>Basınç</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="besi_p_in" step="0.1" value="5.0">
+                                    <select id="besi_p_in_unit">
+                                        <option value="bar">bar (mutlak)</option>
+                                        <option value="barg">barg</option>
+                                        <option value="psi">psi</option>
+                                        <option value="kpa">kPa</option>
+                                        <option value="mpa">MPa</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Sıcaklık</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="besi_t_in" step="0.1" value="105.0">
+                                    <select id="besi_t_in_unit">
+                                        <option value="c">°C</option>
+                                        <option value="f">°F</option>
+                                        <option value="k">K</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Debi</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="besi_flow" step="1" value="3600">
+                                    <select id="besi_flow_unit">
+                                        <option value="kgh">kg/h</option>
+                                        <option value="kgs">kg/s</option>
+                                        <option value="lbh">lb/h</option>
+                                        <option value="lbs">lb/s</option>
+                                        <option value="tonh">ton/h</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Özgül Isı (cp)</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="besi_cp" step="0.01" value="4.28">
+                                    <select id="besi_cp_unit">
+                                        <option value="kjkgk">kJ/kgK</option>
+                                        <option value="kcalkgc">kcal/kg°C</option>
+                                        <option value="btulbf">Btu/lb°F</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Çıkış basıncı</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="besi_p_out" step="0.1" value="10.0">
+                                    <select id="besi_p_out_unit">
+                                        <option value="bar">bar (mutlak)</option>
+                                        <option value="barg">barg</option>
+                                        <option value="psi">psi</option>
+                                        <option value="kpa">kPa</option>
+                                        <option value="mpa">MPa</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="radio-group">
+                                <label><input type="radio" name="besi_calcMode" id="besi_modeDesign" value="design" checked> Tasarım (Q hesapla)</label>
+                                <label><input type="radio" name="besi_calcMode" id="besi_modeAnalysis" value="analysis"> Analiz (Q gir)</label>
+                            </div>
+                            <div id="besi_designOptions">
+                                <div class="input-group">
+                                    <label>Hedef çıkış fazı</label>
+                                    <select id="besi_targetPhase">
+                                        <option value="doymusSivi">Doymuş sıvı</option>
+                                        <option value="doymusBuhar">Doymuş buhar</option>
+                                        <option value="kizginBuhar">Kızgın buhar</option>
+                                    </select>
+                                </div>
+                                <div id="besi_superheatTempGroup" style="display:none;">
+                                    <div class="input-group">
+                                        <label>Kızgın buhar sıcaklığı</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="besi_superheatTemp" value="300">
+                                            <select id="besi_superheatTemp_unit">
+                                                <option value="c">°C</option>
+                                                <option value="f">°F</option>
+                                                <option value="k">K</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="besi_analysisOptions" style="display:none;">
+                                <div class="input-group">
+                                    <label>Aktarılan ısı gücü Q</label>
+                                    <div class="input-wrapper">
+                                        <input type="number" id="besi_heatInput" value="2500">
+                                        <select id="besi_heatInput_unit">
+                                            <option value="kw">kW</option>
+                                            <option value="mw">MW</option>
+                                            <option value="btuh">Btu/h</option>
+                                            <option value="kcalh">kcal/h</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="besi_calculateBtn">HESAPLA</button>
+                        </div>
+                        <div class="output-panel">
+                            <div class="result-card">
+                                <div class="result-item"><span>Çıkış basıncı</span><span class="result-value" id="besi_resPout">10.0 bar</span></div>
+                                <div class="result-item"><span>Doyma sıcaklığı</span><span class="result-value" id="besi_resTsat">179.9 °C</span></div>
+                                <div class="result-item"><span>Çıkış sıcaklığı</span><span class="result-value" id="besi_resTout">179.9 °C</span></div>
+                                <div class="result-item"><span>Faz / Kuruluk</span><span class="result-value" id="besi_resPhase">Doymuş buhar</span></div>
+                                <div class="result-item"><span>Çıkış entalpisi</span><span class="result-value" id="besi_resHout">2778.1 kJ/kg</span></div>
+                                <div class="result-item"><span>Aktarılan ısı Q</span><span class="result-value" id="besi_resQ">2328.7 kW</span></div>
+                                <div class="result-item"><span>Giriş entalpisi</span><span class="result-value" id="besi_resHin">449.4 kJ/kg</span></div>
+                                <div class="result-item"><span>Debi</span><span class="result-value" id="besi_resFlow">3600 kg/h</span></div>
+                            </div>
+                            <div class="doyma-card">
+                                <strong>Doyma noktası (P çıkış)</strong>
+                                <div><span>hf (sıvı):</span><span id="besi_resHf">762.8 kJ/kg</span></div>
+                                <div><span>hg (buhar):</span><span id="besi_resHg">2778.1 kJ/kg</span></div>
+                                <div><span>hfg:</span><span id="besi_resHfg">2015.3 kJ/kg</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="official-footer">
+            <div class="footer-inner">
+                <div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div>
+                <div class="footer-links">
+                    <a href="#">Gizlilik</a>
+                    <a href="#">Kullanım Koşulları</a>
+                    <a href="#">Enerji Verimliliği</a>
+                    <a href="#">Yardım</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır. Bu portal, termodinamik analiz ve eğitim amaçlıdır.
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // Su buharı tablosu (basınç kPa, Tsat °C, hf, hg kJ/kg)
+    const satWaterTable = [
+        {P:1,Tsat:6.97,hf:29.3,hg:2513.7},{P:1.5,Tsat:13.02,hf:54.68,hg:2524.7},{P:2,Tsat:17.5,hf:73.43,hg:2532.9},{P:2.5,Tsat:21.08,hf:88.42,hg:2539.4},{P:3,Tsat:24.08,hf:100.98,hg:2544.8},{P:4,Tsat:28.96,hf:121.39,hg:2553.7},{P:5,Tsat:32.87,hf:137.75,hg:2560.7},{P:7.5,Tsat:40.29,hf:168.74,hg:2574},{P:10,Tsat:45.81,hf:191.79,hg:2583.9},{P:15,Tsat:53.97,hf:225.93,hg:2598.3},{P:20,Tsat:60.06,hf:251.4,hg:2608.9},{P:25,Tsat:64.96,hf:271.93,hg:2617.5},{P:30,Tsat:69.09,hf:289.24,hg:2624.6},{P:40,Tsat:75.86,hf:317.58,hg:2636.1},{P:50,Tsat:81.32,hf:340.49,hg:2645.2},{P:75,Tsat:91.76,hf:384.36,hg:2662.4},{P:100,Tsat:99.61,hf:417.51,hg:2675},{P:125,Tsat:105.97,hf:444.32,hg:2684.9},{P:150,Tsat:111.35,hf:467.11,hg:2693.1},{P:175,Tsat:116.04,hf:486.99,hg:2700.2},{P:200,Tsat:120.21,hf:504.7,hg:2706.3},{P:225,Tsat:123.97,hf:520.71,hg:2711.7},{P:250,Tsat:127.41,hf:535.35,hg:2716.5},{P:275,Tsat:130.58,hf:548.86,hg:2720.8},{P:300,Tsat:133.52,hf:561.43,hg:2724.9},{P:325,Tsat:136.27,hf:573.24,hg:2728.6},{P:350,Tsat:138.86,hf:584.26,hg:2732},{P:375,Tsat:141.3,hf:594.72,hg:2735.1},{P:400,Tsat:143.61,hf:604.66,hg:2738.1},{P:450,Tsat:147.9,hf:623.14,hg:2743.4},{P:500,Tsat:151.83,hf:640.09,hg:2748.1},{P:550,Tsat:155.46,hf:655.77,hg:2752.4},{P:600,Tsat:158.83,hf:670.38,hg:2756.2},{P:650,Tsat:161.98,hf:684.08,hg:2759.6},{P:700,Tsat:164.95,hf:696.97,hg:2762.8},{P:750,Tsat:167.75,hf:709.24,hg:2765.7},{P:800,Tsat:170.41,hf:720.87,hg:2768.3},{P:850,Tsat:172.94,hf:732,hg:2770.8},{P:900,Tsat:175.35,hf:742.72,hg:2773},{P:950,Tsat:177.66,hf:753.02,hg:2775.1},{P:1000,Tsat:179.88,hf:762.81,hg:2777.1},{P:1100,Tsat:184.06,hf:781.03,hg:2780.7},{P:1200,Tsat:187.96,hf:798.33,hg:2783.8},{P:1300,Tsat:191.6,hf:814.82,hg:2786.5},{P:1400,Tsat:195.04,hf:830.35,hg:2788.9},{P:1500,Tsat:198.29,hf:844.55,hg:2791},{P:1750,Tsat:205.72,hf:876.12,hg:2795.2},{P:2000,Tsat:212.38,hf:908.47,hg:2798.3},{P:2250,Tsat:218.41,hf:933.54,hg:2800.5},{P:2500,Tsat:223.95,hf:958.87,hg:2801.9},{P:3000,Tsat:233.85,hf:1008.3,hg:2803.2},{P:3500,Tsat:242.56,hf:1049.7,hg:2802.7},{P:4000,Tsat:250.35,hf:1087.4,hg:2800.8},{P:5000,Tsat:263.94,hf:1154.5,hg:2794.2},{P:6000,Tsat:275.59,hf:1213.8,hg:2784.6},{P:7000,Tsat:285.83,hf:1267.5,hg:2772.6},{P:8000,Tsat:295.01,hf:1317.1,hg:2758.7},{P:9000,Tsat:303.35,hf:1363.7,hg:2742.9},{P:10000,Tsat:311,hf:1407.8,hg:2725.5},{P:11000,Tsat:318.08,hf:1450.2,hg:2706.3},{P:12000,Tsat:324.68,hf:1491.3,hg:2685.4},{P:13000,Tsat:330.85,hf:1531.4,hg:2662.7},{P:14000,Tsat:336.67,hf:1571,hg:2637.9},{P:15000,Tsat:342.16,hf:1610.3,hg:2610.8},{P:16000,Tsat:347.36,hf:1649.9,hg:2581},{P:17000,Tsat:352.29,hf:1690.3,hg:2547.7},{P:18000,Tsat:356.99,hf:1732.2,hg:2510},{P:19000,Tsat:361.47,hf:1776.8,hg:2466},{P:20000,Tsat:365.75,hf:1826.6,hg:2412.1},{P:21000,Tsat:369.83,hf:1888,hg:2338.4},{P:22000,Tsat:373.71,hf:2011.1,hg:2172.6},{P:22064,Tsat:373.95,hf:2084.3,hg:2084.3}
+    ];
+
+    function convertPressureToBar(v,u){
+        if(u==='bar') return v;
+        if(u==='barg') return v+1;
+        if(u==='psi') return v*0.0689476;
+        if(u==='kpa') return v/100;
+        if(u==='mpa') return v*10;
+        return v;
+    }
+    function convertTempToC(v,u){
+        if(u==='c') return v;
+        if(u==='f') return (v-32)*5/9;
+        if(u==='k') return v-273.15;
+        return v;
+    }
+    function convertFlowToKgs(v,u){
+        if(u==='kgh') return v/3600;
+        if(u==='kgs') return v;
+        if(u==='lbh') return (v*0.453592)/3600;
+        if(u==='lbs') return v*0.453592;
+        if(u==='tonh') return (v*1000)/3600;
+        return v/3600;
+    }
+    function convertCpToKjKgK(v,u){
+        if(u==='kjkgk') return v;
+        if(u==='kcalkgc') return v*4.1868;
+        if(u==='btulbf') return v*4.1868;
+        return v;
+    }
+    function convertPowerToKw(v,u){
+        if(u==='kw') return v;
+        if(u==='mw') return v*1000;
+        if(u==='btuh') return v*0.000293071;
+        if(u==='kcalh') return v*0.001163;
+        return v;
+    }
+    function interpolateTable(P_kPa){
+        if(P_kPa<=satWaterTable[0].P) return satWaterTable[0];
+        if(P_kPa>=satWaterTable[satWaterTable.length-1].P) return satWaterTable[satWaterTable.length-1];
+        let lower=satWaterTable[0], upper=satWaterTable[satWaterTable.length-1];
+        for(let i=0;i<satWaterTable.length-1;i++){
+            if(P_kPa>=satWaterTable[i].P && P_kPa<=satWaterTable[i+1].P){
+                lower=satWaterTable[i];
+                upper=satWaterTable[i+1];
+                break;
+            }
+        }
+        let ratio=(P_kPa-lower.P)/(upper.P-lower.P);
+        return {
+            Tsat: lower.Tsat + ratio*(upper.Tsat-lower.Tsat),
+            hf: lower.hf + ratio*(upper.hf-lower.hf),
+            hg: lower.hg + ratio*(upper.hg-lower.hg)
+        };
+    }
+    function besi_calculate(){
+        let P_in=convertPressureToBar(parseFloat(document.getElementById('besi_p_in').value)||5, document.getElementById('besi_p_in_unit').value);
+        let T_in=convertTempToC(parseFloat(document.getElementById('besi_t_in').value)||105, document.getElementById('besi_t_in_unit').value);
+        let flow_raw=parseFloat(document.getElementById('besi_flow').value)||3600;
+        let m_dot=convertFlowToKgs(flow_raw, document.getElementById('besi_flow_unit').value);
+        let cp_si=convertCpToKjKgK(parseFloat(document.getElementById('besi_cp').value)||4.28, document.getElementById('besi_cp_unit').value);
+        let P_out_bar=convertPressureToBar(parseFloat(document.getElementById('besi_p_out').value)||10, document.getElementById('besi_p_out_unit').value);
+        let P_out_kPa=P_out_bar*100;
+        let h_in=cp_si*T_in;
+        let satProps=interpolateTable(P_out_kPa);
+        let Tsat=satProps.Tsat, hf=satProps.hf, hg=satProps.hg, hfg=hg-hf;
+        let h_out, T_out, phaseText, Q;
+        if(document.getElementById('besi_modeDesign').checked){
+            let target=document.getElementById('besi_targetPhase').value;
+            if(target==='doymusSivi'){
+                h_out=hf;
+                phaseText='Doymuş sıvı (x=0)';
+                T_out=Tsat;
+            } else if(target==='doymusBuhar'){
+                h_out=hg;
+                phaseText='Doymuş buhar (x=1)';
+                T_out=Tsat;
+            } else {
+                let T_super=convertTempToC(parseFloat(document.getElementById('besi_superheatTemp').value)||300, document.getElementById('besi_superheatTemp_unit').value);
+                if(T_super<Tsat) T_super=Tsat+50;
+                T_out=T_super;
+                h_out=hg+2.0*(T_out-Tsat);
+                phaseText='Kızgın buhar';
+            }
+            Q=m_dot*(h_out-h_in);
+        } else {
+            let Q_input=convertPowerToKw(parseFloat(document.getElementById('besi_heatInput').value)||0, document.getElementById('besi_heatInput_unit').value);
+            Q=Q_input;
+            h_out=h_in+Q/m_dot;
+            if(h_out<hf){
+                phaseText='Kızgın sıvı';
+                T_out=h_out/cp_si;
+                if(T_out>Tsat) T_out=Tsat;
+            } else if(h_out<=hg){
+                let x=(h_out-hf)/hfg;
+                phaseText=`Islak buhar (x=${x.toFixed(3)})`;
+                T_out=Tsat;
+            } else {
+                phaseText='Kızgın buhar';
+                T_out=Tsat+(h_out-hg)/2.0;
+            }
+        }
+        document.getElementById('besi_resPout').innerText=P_out_bar.toFixed(2)+' bar';
+        document.getElementById('besi_resTsat').innerText=Tsat.toFixed(1)+' °C';
+        document.getElementById('besi_resTout').innerText=T_out.toFixed(1)+' °C';
+        document.getElementById('besi_resPhase').innerText=phaseText;
+        document.getElementById('besi_resHout').innerText=h_out.toFixed(2)+' kJ/kg';
+        document.getElementById('besi_resQ').innerText=Q.toFixed(2)+' kW';
+        document.getElementById('besi_resHin').innerText=h_in.toFixed(2)+' kJ/kg';
+        document.getElementById('besi_resFlow').innerText=flow_raw.toFixed(0)+' '+document.getElementById('besi_flow_unit').value;
+        document.getElementById('besi_resHf').innerText=hf.toFixed(2)+' kJ/kg';
+        document.getElementById('besi_resHg').innerText=hg.toFixed(2)+' kJ/kg';
+        document.getElementById('besi_resHfg').innerText=hfg.toFixed(2)+' kJ/kg';
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.getElementById('besi_calculateBtn').addEventListener('click', besi_calculate);
+        document.querySelectorAll('input[name="besi_calcMode"]').forEach(r=>{
+            r.addEventListener('change', function(){
+                document.getElementById('besi_designOptions').style.display = document.getElementById('besi_modeDesign').checked ? 'block' : 'none';
+                document.getElementById('besi_analysisOptions').style.display = document.getElementById('besi_modeAnalysis').checked ? 'block' : 'none';
+            });
+        });
+        document.getElementById('besi_targetPhase').addEventListener('change', function(){
+            document.getElementById('besi_superheatTempGroup').style.display = this.value === 'kizginBuhar' ? 'block' : 'none';
+        });
+        // Tüm inputlarda değişiklik dinle
+        const allInputs = document.querySelectorAll('input, select');
+        allInputs.forEach(el => el.addEventListener('change', besi_calculate));
+        allInputs.forEach(el => el.addEventListener('input', besi_calculate));
+        besi_calculate();
+
+        // ========== SIDEBAR MENÜ ==========
+        const menuBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const bodyEl = document.body;
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                bodyEl.classList.toggle('sidebar-open');
+            });
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnBtn = menuBtn.contains(event.target);
+                if (!isClickInsideSidebar && !isClickOnBtn && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    bodyEl.classList.remove('sidebar-open');
+                }
+            });
+        }
+        
+        // ========== GECE MODU ==========
+        const themeToggle = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggle.querySelector('i');
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isDark) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    });
+</script>
+</body>
+</html>

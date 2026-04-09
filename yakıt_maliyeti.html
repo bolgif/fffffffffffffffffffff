@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Doğalgaz Maliyeti | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary); line-height: 1.5; overflow-x: hidden; transition: background-color 0.3s ease, color 0.2s ease; }
+        :root { --primary-dark: #0a2b4e; --primary-blue: #1e3a5f; --accent-red: #c62828; --light-bg: #ffffff; --gray-border: #e2e8f0; --text-dark: #1e2a3a; --text-muted: #4a627a; --bg-body: #f5f7fc; --bg-surface: #ffffff; --bg-surface-secondary: #f8fafd; --text-primary: #1f2a3e; --text-secondary: #4a627a; --border-color: #e2e8f0; --card-shadow: 0 8px 20px rgba(0,0,0,0.03); --sidebar-bg: #ffffff; --sidebar-hover: #eef3fc; --footer-bg: #0a1c2f; --footer-text: #ccdbe9; --btn-primary-bg: #0a2b4e; --btn-primary-hover: #c62828; --sidebar-width: 280px; }
+        body.dark-mode { --bg-body: #0f172a; --bg-surface: #1e293b; --bg-surface-secondary: #0f172a; --text-primary: #e2e8f0; --text-secondary: #94a3b8; --border-color: #334155; --card-shadow: 0 8px 20px rgba(0,0,0,0.3); --sidebar-bg: #1e293b; --sidebar-hover: #334155; --footer-bg: #020617; --footer-text: #94a3b8; --btn-primary-bg: #1e293b; --btn-primary-hover: #ef4444; --primary-dark: #38bdf8; --primary-blue: #7dd3fc; --accent-red: #ef4444; --gray-border: #334155; --text-dark: #e2e8f0; --text-muted: #94a3b8; --light-bg: #1e293b; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border-color); position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid var(--border-color); background: var(--bg-surface); position: sticky; top: 0; }
+        .home-btn { display: flex; align-items: center; gap: 10px; background: var(--btn-primary-bg); color: white; padding: 10px 16px; border-radius: 40px; text-decoration: none; font-weight: 700; width: fit-content; }
+        .home-btn:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+        .sidebar-menu { padding: 16px; }
+        .menu-group { margin-bottom: 24px; }
+        .menu-group-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; padding-left: 8px; }
+        .menu-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin: 4px 0; border-radius: 12px; text-decoration: none; color: var(--text-primary); font-weight: 500; transition: 0.2s; }
+        .menu-link i { width: 24px; color: var(--primary-blue); }
+        .menu-link:hover { background: var(--sidebar-hover); color: var(--accent-red); }
+        .menu-link.active { background: var(--primary-dark); color: white; }
+        .menu-link.active i { color: white; }
+        .main-content { flex: 1; margin-left: 0; transition: margin-left 0.3s ease; width: 100%; }
+        body.sidebar-open .main-content { margin-left: var(--sidebar-width); }
+        .menu-toggle-btn { background: transparent; border: none; font-size: 1.6rem; color: var(--primary-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 12px; }
+        .menu-toggle-btn:hover { background: var(--sidebar-hover); color: var(--accent-red); }
+        .main-header { background: var(--bg-surface); border-bottom: 3px solid var(--accent-red); position: sticky; top: 0; z-index: 100; }
+        .header-wrapper { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 32px; gap: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 16px; }
+        .brand-title a { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); text-decoration: none; }
+        .brand-title a:hover { color: var(--accent-red); }
+        .nav-menu ul { display: flex; list-style: none; gap: 28px; flex-wrap: wrap; }
+        .nav-menu a { text-decoration: none; font-weight: 600; font-size: 0.9rem; color: var(--text-primary); transition: 0.2s; padding: 6px 0; border-bottom: 2px solid transparent; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+        .theme-toggle { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-primary); padding: 8px; border-radius: 50%; margin-left: 10px; }
+        .theme-toggle:hover { background: var(--bg-surface-secondary); color: var(--accent-red); }
+        .container { max-width: 100%; margin: 0; padding: 0 32px; }
+        .content-section { background: var(--bg-surface); margin: 2rem 0; padding: 2rem 32px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); border-left: none; border-right: none; }
+        .section-title { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; border-left: 6px solid var(--accent-red); padding-left: 18px; }
+        .tier-editor { background: var(--bg-surface-secondary); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid var(--border-color); }
+        .tier-header { display: grid; grid-template-columns: minmax(100px,2fr) minmax(70px,1.2fr) minmax(70px,1.2fr) minmax(70px,1fr) 32px; gap: 0.5rem; padding: 0 0.2rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .tier-edit-item { display: grid; grid-template-columns: minmax(100px,2fr) minmax(70px,1.2fr) minmax(70px,1.2fr) minmax(70px,1fr) 32px; gap: 0.5rem; align-items: center; background: var(--bg-surface); padding: 0.6rem 0.8rem; border-radius: 1.2rem; margin-bottom: 0.6rem; border: 1px solid var(--border-color); }
+        .tier-edit-item input { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--text-primary); font-size: 0.85rem; padding: 0.25rem 0.1rem; outline: none; width: 100%; }
+        .remove-tier { background: #fee2e2; border: none; color: var(--accent-red); width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        body.dark-mode .remove-tier { background: #7f1a1a; color: #fecaca; }
+        .add-tier-btn, .update-btn { background: var(--bg-surface-secondary); border: 1px solid var(--border-color); color: var(--primary-dark); font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem; margin-right: 0.5rem; margin-top: 0.5rem; }
+        .update-btn { background: var(--btn-primary-bg); color: white; border: none; margin-top: 1rem; padding: 0.6rem 1.5rem; }
+        .update-btn:hover { background: var(--btn-primary-hover); }
+        .input-panel { background: var(--bg-surface-secondary); border-radius: 1.5rem; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid var(--border-color); }
+        .input-group { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+        .input-group input { flex: 2; min-width: 200px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 1.5rem; padding: 0.8rem 1.2rem; font-size: 1.2rem; font-weight: 600; }
+        .unit-selector { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 2rem; padding: 0.5rem 1rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .selected-tier { background: var(--bg-surface); border-radius: 2rem; padding: 0.8rem 1.2rem; margin: 1rem 0; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); }
+        .action-btn { width: 100%; background: var(--btn-primary-bg); border: none; border-radius: 2rem; padding: 1rem; font-weight: 700; font-size: 1rem; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+        .action-btn:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+        .result-box { background: var(--bg-surface-secondary); border-radius: 1.5rem; padding: 1.5rem; text-align: center; }
+        .result-value { font-size: 2.8rem; font-weight: 800; color: var(--primary-dark); }
+        .info-note { background: var(--bg-surface-secondary); border-left: 5px solid var(--accent-red); border-radius: 1rem; padding: 0.6rem 1.2rem; margin: 1rem 0; font-size: 0.8rem; }
+        footer.official-footer { background: var(--footer-bg); color: var(--footer-text); margin-top: 2rem; padding: 2rem 32px 1.5rem; }
+        .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+        .footer-links a { color: var(--footer-text); text-decoration: none; margin-right: 24px; font-size: 0.8rem; }
+        .copyright { text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; }
+        @media (max-width: 780px) { .container, .header-wrapper, .content-section, .official-footer { padding-left: 20px; padding-right: 20px; } .header-wrapper { flex-direction: column; align-items: flex-start; } .tier-header { display: none; } .tier-edit-item { grid-template-columns: 1fr 1fr 1fr 1fr 32px; } .nav-menu { width: 100%; overflow-x: auto; } .theme-toggle { margin-left: 0; margin-top: 10px; } .logo-area { width: 100%; justify-content: space-between; } }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a></div>
+        <div class="sidebar-menu">
+            <div class="menu-group"><div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi.html" class="menu-link"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="yakıt_maliyeti.html" class="menu-link active"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası yakında.'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="turbin_ara.html" class="menu-link"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="ekonomizer.html" class="menu-link"><i class="fas fa-exchange-alt"></i> Fırın Ekonomizeri</a>
+                <a href="kondenser.html" class="menu-link"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="besi.html" class="menu-link"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="yanma_hesabı.html" class="menu-link"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group"><div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini yakında.'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Küresel fiyat endeksi yakında.'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin yakında.'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+    <main class="main-content" id="mainContent">
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area"><button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button><div class="brand-title"><a href="index.html">Efficiency Crest</a></div></div>
+                <div style="display: flex; align-items: center;"><div class="nav-menu"><ul><li><a href="index.html">Ana Sayfa</a></li><li><a href="yakıt_analizi.html">Yakıt Analizi</a></li><li><a href="#" class="active">Doğalgaz Maliyeti</a></li><li><a href="#">Dokümanlar</a></li><li><a href="#">Duyurular</a></li><li><a href="index.html#contact">İletişim</a></li></ul></div><button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title"><i class="fas fa-coins"></i> Doğalgaz Maliyeti Hesaplama</div>
+                <div class="info-note"><i class="fas fa-info-circle"></i> Kademeli fiyatlandırma ile yıllık doğalgaz tüketiminizin maliyetini hesaplayın. m³ veya Sm³ birimini seçebilirsiniz.</div>
+                <div class="tier-editor">
+                    <h3><i class="fas fa-sliders-h"></i> Kademeleri Özelleştir</h3>
+                    <div class="tier-header"><div>Kademe Adı</div><div>Alt Sınır (m³)</div><div>Üst Sınır (m³)</div><div>Fiyat (TL/m³)</div><div></div></div>
+                    <div id="tiersContainer"></div>
+                    <button class="add-tier-btn" id="addTierBtn"><i class="fas fa-plus"></i> Yeni Kademe Ekle</button>
+                    <button class="update-btn" id="updateTiersBtn"><i class="fas fa-save"></i> Kademeleri Güncelle</button>
+                </div>
+                <div class="input-panel">
+                    <div class="input-group"><input type="number" id="volume" value="50000" step="1"><div class="unit-selector"><span>Birim:</span><select id="unitSelect"><option value="m3" selected>m³</option><option value="sm3">Sm³</option></select></div></div>
+                    <div class="selected-tier" id="tierDisplay"><span><i class="fas fa-tag"></i> Seçilen Kademe</span><span id="selectedTier">Sanayi Küçük (13,19 TL/m³)</span></div>
+                    <button class="action-btn" id="calculateBtn"><i class="fas fa-calculator"></i> Maliyeti Hesapla</button>
+                </div>
+                <div class="result-box"><div class="result-label">Toplam Yıllık Doğalgaz Maliyeti</div><div class="result-value" id="totalCost">659.500,00</div><div class="result-unit">TL</div></div>
+            </div>
+        </div>
+        <footer class="official-footer">
+            <div class="footer-inner"><div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div><div class="footer-links"><a href="#">Gizlilik</a><a href="#">Kullanım Koşulları</a><a href="#">Enerji Verimliliği</a><a href="#">Yardım</a></div></div>
+            <div class="copyright"><i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır.</div>
+        </footer>
+    </main>
+</div>
+<script>
+    let tiers = [{ id: 1, name: 'Sanayi Küçük', min: 0, max: 100000, price: 13.19 }, { id: 2, name: 'Sanayi Orta', min: 100001, max: 1000000, price: 12.01 }, { id: 3, name: 'Sanayi Büyük', min: 1000001, max: Infinity, price: 11.31 }];
+    const volumeInput = document.getElementById('volume'), unitSelect = document.getElementById('unitSelect'), calculateBtn = document.getElementById('calculateBtn'), updateTiersBtn = document.getElementById('updateTiersBtn'), addTierBtn = document.getElementById('addTierBtn'), tiersContainer = document.getElementById('tiersContainer'), totalCostSpan = document.getElementById('totalCost'), selectedTierSpan = document.getElementById('selectedTier');
+    const SM3_TO_M3 = 273.15/288.15;
+    function renderTiers() { tiersContainer.innerHTML = ''; tiers.sort((a,b)=>a.min-b.min).forEach(tier=>{ const div = document.createElement('div'); div.className='tier-edit-item'; div.innerHTML=`<input type="text" class="tier-name-input" value="${tier.name.replace(/"/g,'&quot;')}"><input type="number" class="tier-min" value="${tier.min}" step="1"><input type="text" class="tier-max" value="${tier.max===Infinity?'':tier.max}" placeholder="∞"><input type="number" class="tier-price" value="${tier.price}" step="0.01"><button class="remove-tier"><i class="fas fa-times"></i></button>`; div.querySelector('.remove-tier').addEventListener('click',()=>{ if(tiers.length>1){ tiers=tiers.filter(t=>t.id!==tier.id); renderTiers(); } else alert('En az bir kademe olmalı!'); }); tiersContainer.appendChild(div); }); }
+    function updateTiersFromInputs(){ const divs=document.querySelectorAll('.tier-edit-item'); const updated=[]; divs.forEach((div,idx)=>{ const name=div.querySelector('.tier-name-input').value.trim(); const min=parseFloat(div.querySelector('.tier-min').value)||0; let maxVal=div.querySelector('.tier-max').value; const max=maxVal===''?Infinity:(parseFloat(maxVal)||Infinity); const price=parseFloat(div.querySelector('.tier-price').value)||0; if(name) updated.push({id:idx+1,name:name,min:min,max:max,price:price}); }); updated.sort((a,b)=>a.min-b.min); updated.forEach((t,i)=>t.id=i+1); tiers=updated; renderTiers(); calculateAndUpdate(); }
+    function getTierAndPrice(vol){ for(const t of tiers) if(vol>=t.min && vol<=t.max) return {tierName:t.name, price:t.price}; return {tierName:tiers[0]?.name||'Kademe 1', price:tiers[0]?.price||0}; }
+    function calculateAndUpdate(){ let vol=parseFloat(volumeInput.value)||0; if(unitSelect.value==='sm3') vol*=SM3_TO_M3; const {tierName,price}=getTierAndPrice(vol); const total=vol*price; selectedTierSpan.innerText=`${tierName} (${price.toFixed(2).replace('.',',')} TL/m³)`; totalCostSpan.innerText=total.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+    calculateBtn.addEventListener('click',calculateAndUpdate); updateTiersBtn.addEventListener('click',updateTiersFromInputs); addTierBtn.addEventListener('click',()=>{ let maxMax=0; tiers.forEach(t=>{if(t.max!==Infinity && t.max>maxMax) maxMax=t.max;}); const newMin=maxMax+1; const newId=tiers.length?Math.max(...tiers.map(t=>t.id))+1:1; tiers.push({id:newId,name:`Kademe ${newId}`,min:newMin,max:Infinity,price:10.00}); renderTiers(); });
+    volumeInput.addEventListener('keypress',e=>{if(e.key==='Enter') calculateAndUpdate();}); unitSelect.addEventListener('change',calculateAndUpdate);
+    window.addEventListener('load',()=>{ renderTiers(); calculateAndUpdate(); });
+    const menuBtn = document.getElementById('menuToggleBtn'), sidebar = document.getElementById('sidebar'), body = document.body;
+    menuBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); body.classList.toggle('sidebar-open'); });
+    document.addEventListener('click', function(event) { if (!sidebar.contains(event.target) && !menuBtn.contains(event.target) && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); body.classList.remove('sidebar-open'); } });
+    const themeToggle = document.getElementById('themeToggleBtn'), themeIcon = themeToggle.querySelector('i');
+    if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode'); if (isDark) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); localStorage.setItem('theme', 'dark'); } else { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); localStorage.setItem('theme', 'light'); } });
+</script>
+</body>
+</html>

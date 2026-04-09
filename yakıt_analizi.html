@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Yakıt Analizi | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary); line-height: 1.5; overflow-x: hidden; transition: background-color 0.3s ease, color 0.2s ease; }
+        :root { --primary-dark: #0a2b4e; --primary-blue: #1e3a5f; --accent-red: #c62828; --light-bg: #ffffff; --gray-border: #e2e8f0; --text-dark: #1e2a3a; --text-muted: #4a627a; --bg-body: #f5f7fc; --bg-surface: #ffffff; --bg-surface-secondary: #f8fafd; --text-primary: #1f2a3e; --text-secondary: #4a627a; --border-color: #e2e8f0; --card-shadow: 0 8px 20px rgba(0,0,0,0.03); --sidebar-bg: #ffffff; --sidebar-hover: #eef3fc; --footer-bg: #0a1c2f; --footer-text: #ccdbe9; --btn-primary-bg: #0a2b4e; --btn-primary-hover: #c62828; --sidebar-width: 280px; }
+        body.dark-mode { --bg-body: #0f172a; --bg-surface: #1e293b; --bg-surface-secondary: #0f172a; --text-primary: #e2e8f0; --text-secondary: #94a3b8; --border-color: #334155; --card-shadow: 0 8px 20px rgba(0,0,0,0.3); --sidebar-bg: #1e293b; --sidebar-hover: #334155; --footer-bg: #020617; --footer-text: #94a3b8; --btn-primary-bg: #1e293b; --btn-primary-hover: #ef4444; --primary-dark: #38bdf8; --primary-blue: #7dd3fc; --accent-red: #ef4444; --gray-border: #334155; --text-dark: #e2e8f0; --text-muted: #94a3b8; --light-bg: #1e293b; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border-color); position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid var(--border-color); background: var(--bg-surface); position: sticky; top: 0; }
+        .home-btn { display: flex; align-items: center; gap: 10px; background: var(--btn-primary-bg); color: white; padding: 10px 16px; border-radius: 40px; text-decoration: none; font-weight: 700; width: fit-content; }
+        .home-btn:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+        .sidebar-menu { padding: 16px; }
+        .menu-group { margin-bottom: 24px; }
+        .menu-group-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; padding-left: 8px; }
+        .menu-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin: 4px 0; border-radius: 12px; text-decoration: none; color: var(--text-primary); font-weight: 500; transition: 0.2s; }
+        .menu-link i { width: 24px; color: var(--primary-blue); }
+        .menu-link:hover { background: var(--sidebar-hover); color: var(--accent-red); }
+        .menu-link.active { background: var(--primary-dark); color: white; }
+        .menu-link.active i { color: white; }
+        .main-content { flex: 1; margin-left: 0; transition: margin-left 0.3s ease; width: 100%; }
+        body.sidebar-open .main-content { margin-left: var(--sidebar-width); }
+        .menu-toggle-btn { background: transparent; border: none; font-size: 1.6rem; color: var(--primary-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 12px; }
+        .menu-toggle-btn:hover { background: var(--sidebar-hover); color: var(--accent-red); }
+        .main-header { background: var(--bg-surface); border-bottom: 3px solid var(--accent-red); position: sticky; top: 0; z-index: 100; }
+        .header-wrapper { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 32px; gap: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 16px; }
+        .brand-title a { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); text-decoration: none; }
+        .brand-title a:hover { color: var(--accent-red); }
+        .nav-menu ul { display: flex; list-style: none; gap: 28px; flex-wrap: wrap; }
+        .nav-menu a { text-decoration: none; font-weight: 600; font-size: 0.9rem; color: var(--text-primary); transition: 0.2s; padding: 6px 0; border-bottom: 2px solid transparent; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+        .theme-toggle { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-primary); padding: 8px; border-radius: 50%; margin-left: 10px; }
+        .theme-toggle:hover { background: var(--bg-surface-secondary); color: var(--accent-red); }
+        .container { max-width: 100%; margin: 0; padding: 0 32px; }
+        .content-section { background: var(--bg-surface); margin: 2rem 0; padding: 2rem 32px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); border-left: none; border-right: none; }
+        .section-title { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; border-left: 6px solid var(--accent-red); padding-left: 18px; }
+        .yakit-secim { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; align-items: center; }
+        .yakit-kategori { width: 100%; font-size: 1rem; font-weight: 600; color: var(--primary-dark); margin: 0.5rem 0 0.2rem; border-bottom: 1px dashed var(--border-color); }
+        .yakit-buton { background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: 2rem; padding: 0.5rem 1.2rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .yakit-buton:hover { background: var(--bg-surface); transform: translateY(-2px); }
+        .yakit-buton.aktif { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+        .input-panel { background: var(--bg-surface-secondary); border-radius: 1.5rem; padding: 1.8rem; margin-bottom: 2rem; border: 1px solid var(--border-color); display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.2rem; }
+        .input-item { display: flex; flex-direction: column; }
+        .input-item label { font-weight: 500; color: var(--text-secondary); margin-bottom: 0.4rem; font-size: 0.8rem; }
+        .input-item input { padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: 1rem; background: var(--bg-surface); color: var(--text-primary); outline: none; }
+        .param-group { grid-column: 1/-1; display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 0.5rem; background: var(--bg-surface); padding: 1rem 1.5rem; border-radius: 1.5rem; border: 1px solid var(--border-color); }
+        .param-item { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+        .param-item label { font-weight: 600; color: var(--primary-dark); }
+        .param-item input { padding: 0.5rem 0.8rem; border-radius: 1rem; border: 1px solid var(--border-color); background: var(--bg-surface); width: 130px; }
+        .button-group { grid-column: 1/-1; display: flex; justify-content: center; margin-top: 1rem; }
+        .btn-primary { background: var(--btn-primary-bg); border: none; padding: 0.8rem 2rem; border-radius: 2rem; font-weight: 700; color: white; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.6rem; }
+        .btn-primary:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+        .results { margin-top: 2rem; }
+        .results h2, .results h3 { color: var(--primary-dark); margin: 1.5rem 0 1rem; font-weight: 600; border-left: 4px solid var(--accent-red); padding-left: 1rem; }
+        .card-row { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-bottom: 1.5rem; }
+        .card { background: var(--bg-surface-secondary); border-radius: 1.2rem; padding: 1.2rem; flex: 1 1 180px; border: 1px solid var(--border-color); text-align: center; }
+        .card .val { font-size: 1.8rem; font-weight: 800; color: var(--primary-dark); }
+        .results table { width: 100%; border-collapse: collapse; background: var(--bg-surface); border-radius: 1rem; overflow: hidden; margin: 1rem 0; border: 1px solid var(--border-color); }
+        .results th { background: var(--bg-surface-secondary); color: var(--primary-dark); padding: 0.8rem; font-size: 0.85rem; }
+        .results td { padding: 0.7rem 0.5rem; border-bottom: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; }
+        .note { background: #fff8e7; border-left: 8px solid var(--accent-red); border-radius: 1rem; padding: 1rem 1.5rem; font-size: 0.85rem; margin: 1rem 0; color: #5a4a2a; }
+        body.dark-mode .note { background: #2d2a1a; color: #e2e8f0; }
+        footer.official-footer { background: var(--footer-bg); color: var(--footer-text); margin-top: 2rem; padding: 2rem 32px 1.5rem; }
+        .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+        .footer-links a { color: var(--footer-text); text-decoration: none; margin-right: 24px; font-size: 0.8rem; }
+        .footer-links a:hover { text-decoration: underline; color: white; }
+        .copyright { text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; }
+        @media (max-width: 780px) { .container, .header-wrapper, .content-section, .official-footer { padding-left: 20px; padding-right: 20px; } .header-wrapper { flex-direction: column; align-items: flex-start; } .input-panel { grid-template-columns: 1fr; } .param-group { flex-direction: column; align-items: flex-start; } .nav-menu { width: 100%; overflow-x: auto; } .theme-toggle { margin-left: 0; margin-top: 10px; } .logo-area { width: 100%; justify-content: space-between; } }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a></div>
+        <div class="sidebar-menu">
+            <div class="menu-group"><div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi.html" class="menu-link active"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="yakıt_maliyeti.html" class="menu-link"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası (verim son.html) yakında.'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="turbin_ara.html" class="menu-link"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="ekonomizer.html" class="menu-link"><i class="fas fa-exchange-alt"></i> Fırın Ekonomizeri</a>
+                <a href="kondenser.html" class="menu-link"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="besi.html" class="menu-link"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="yanma_hesabı.html" class="menu-link"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group"><div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini yakında.'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Küresel fiyat endeksi yakında.'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin yakında.'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+    <main class="main-content" id="mainContent">
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area"><button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button><div class="brand-title"><a href="index.html">Efficiency Crest</a></div></div>
+                <div style="display: flex; align-items: center;"><div class="nav-menu"><ul><li><a href="index.html">Ana Sayfa</a></li><li><a href="#" class="active">Yakıt Analizi</a></li><li><a href="#">Dokümanlar</a></li><li><a href="#">Duyurular</a></li><li><a href="index.html#contact">İletişim</a></li></ul></div><button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title"><i class="fas fa-fire"></i> Yakıt Analizi</div>
+                <div class="yakit-secim">
+                    <div class="yakit-kategori">⚫ Katı yakıtlar</div>
+                    <button class="yakit-buton" data-yakit="taskomuru">Taşkömürü</button><button class="yakit-buton" data-yakit="linyit">Linyit</button><button class="yakit-buton" data-yakit="antrasit">Antrasit</button><button class="yakit-buton" data-yakit="petrokok">Petrokok</button><button class="yakit-buton" data-yakit="odun_peleti">Odun peleti</button>
+                    <div class="yakit-kategori">🔵 Sıvı yakıtlar</div>
+                    <button class="yakit-buton" data-yakit="agir_fuel_oil">Ağır fuel oil</button><button class="yakit-buton" data-yakit="hafif_fuel_oil">Hafif fuel oil</button><button class="yakit-buton" data-yakit="dizel">Dizel</button><button class="yakit-buton" data-yakit="atik_yag">Atık yağ</button>
+                    <div class="yakit-kategori">🟢 Gaz yakıtlar</div>
+                    <button class="yakit-buton" data-yakit="dogalgaz_yuksek">Doğalgaz (yüksek kal.)</button><button class="yakit-buton" data-yakit="dogalgaz_dusuk">Doğalgaz (standart 8250)</button><button class="yakit-buton" data-yakit="lpg">LPG</button><button class="yakit-buton" data-yakit="propan">Propan</button><button class="yakit-buton" data-yakit="butan">Bütan</button><button class="yakit-buton" data-yakit="biyogaz">Biyogaz</button>
+                </div>
+                <div class="input-panel">
+                    <div class="input-item"><label>Karbon C (%)</label><input type="number" id="yakit_c" step="0.1" value="76.5"></div>
+                    <div class="input-item"><label>Hidrojen H (%)</label><input type="number" id="yakit_h" step="0.1" value="18.5"></div>
+                    <div class="input-item"><label>Oksijen O (%)</label><input type="number" id="yakit_o" step="0.1" value="0"></div>
+                    <div class="input-item"><label>Azot N (%)</label><input type="number" id="yakit_n" step="0.1" value="5.0"></div>
+                    <div class="input-item"><label>Kükürt S (%)</label><input type="number" id="yakit_s" step="0.1" value="0"></div>
+                    <div class="input-item"><label>Nem W (%)</label><input type="number" id="yakit_w" step="0.1" value="0"></div>
+                    <div class="input-item"><label>Kül (%)</label><input type="number" id="yakit_kul" step="0.1" value="0"></div>
+                    <div class="param-group"><div class="param-item"><label>Hava fazlalık katsayısı λ :</label><input type="number" id="yakit_lambda" min="0.7" max="1.6" step="0.01" value="1.20"></div><div class="param-item"><label>Yoğunluk (kg/Nm³) :</label><input type="number" id="yakit_yogunluk" step="0.001" value="0.750"></div></div>
+                    <div class="button-group"><button id="hesaplaYakitAnalizi" class="btn-primary"><i class="fas fa-calculator"></i> HESAPLA</button></div>
+                </div>
+                <div class="results" id="yakitSonuclar"></div>
+            </div>
+        </div>
+        <footer class="official-footer">
+            <div class="footer-inner"><div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div><div class="footer-links"><a href="#">Gizlilik</a><a href="#">Kullanım Koşulları</a><a href="#">Enerji Verimliliği</a><a href="#">Yardım</a></div></div>
+            <div class="copyright"><i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır.</div>
+        </footer>
+    </main>
+</div>
+<script>
+    const yakitlar = { taskomuru:{C:70,H:5,O:8,N:1,S:1,W:10,kul:5,yogunluk:0}, linyit:{C:40,H:3,O:12,N:0.5,S:2,W:30,kul:12.5,yogunluk:0}, antrasit:{C:85,H:3,O:2,N:0.5,S:0.5,W:5,kul:4,yogunluk:0}, petrokok:{C:88,H:3,O:2,N:1,S:4,W:1,kul:1,yogunluk:0}, odun_peleti:{C:45,H:6,O:40,N:0.1,S:0.05,W:8,kul:0.85,yogunluk:0}, agir_fuel_oil:{C:86,H:11,O:0.5,N:0.5,S:2,W:0,kul:0,yogunluk:0}, hafif_fuel_oil:{C:87,H:12,O:0.2,N:0.1,S:0.5,W:0,kul:0.2,yogunluk:0}, dizel:{C:86.5,H:13.2,O:0,N:0,S:0.3,W:0,kul:0,yogunluk:0}, atik_yag:{C:80,H:10,O:5,N:0.5,S:1,W:2,kul:1.5,yogunluk:0}, dogalgaz_yuksek:{C:74,H:24.5,O:0,N:1.5,S:0,W:0,kul:0,yogunluk:0.75}, dogalgaz_dusuk:{C:76.5,H:18.5,O:0,N:5,S:0,W:0,kul:0,yogunluk:0.75}, lpg:{C:82.1,H:17.9,O:0,N:0,S:0,W:0,kul:0,yogunluk:2.15}, propan:{C:81.8,H:18.2,O:0,N:0,S:0,W:0,kul:0,yogunluk:1.964}, butan:{C:82.7,H:17.3,O:0,N:0,S:0,W:0,kul:0,yogunluk:2.588}, biyogaz:{C:55.9,H:15,O:29.1,N:0,S:0,W:0,kul:0,yogunluk:1.214} };
+    const cInp = document.getElementById('yakit_c'), hInp = document.getElementById('yakit_h'), oInp = document.getElementById('yakit_o'), nInp = document.getElementById('yakit_n'), sInp = document.getElementById('yakit_s'), wInp = document.getElementById('yakit_w'), kulInp = document.getElementById('yakit_kul'), lambdaInp = document.getElementById('yakit_lambda'), yogunlukInp = document.getElementById('yakit_yogunluk'), hesaplaBtn = document.getElementById('hesaplaYakitAnalizi'), sonuclarDiv = document.getElementById('yakitSonuclar'), yakitButonlari = document.querySelectorAll('.yakit-buton');
+    const Nm3_per_Sm3 = 273.15/288.15, Sm3_per_Nm3 = 288.15/273.15;
+    yakitButonlari.forEach(btn => { btn.addEventListener('click', function() { yakitButonlari.forEach(b=>b.classList.remove('aktif')); this.classList.add('aktif'); const veri = yakitlar[this.dataset.yakit]; if(veri) { cInp.value = veri.C; hInp.value = veri.H; oInp.value = veri.O; nInp.value = veri.N; sInp.value = veri.S; wInp.value = veri.W; kulInp.value = veri.kul; yogunlukInp.value = veri.yogunluk; yakitAnaliziHesapla(); } }); });
+    hesaplaBtn.addEventListener('click', yakitAnaliziHesapla);
+    function yakitAnaliziHesapla() { let C=parseFloat(cInp.value)||0, H=parseFloat(hInp.value)||0, O=parseFloat(oInp.value)||0, N=parseFloat(nInp.value)||0, S=parseFloat(sInp.value)||0, W=parseFloat(wInp.value)||0, kul=parseFloat(kulInp.value)||0, lambda=parseFloat(lambdaInp.value)||1.2, yogunluk=parseFloat(yogunlukInp.value)||0; if(Math.abs(C+H+O+N+S+W+kul-100)>0.5) { alert("Toplam yüzde 100 olmalıdır!"); return; } let c=C/100, h=H/100, o=O/100, n=N/100, s=S/100, w=W/100; let HHV_kJ=338.3*C+1443*(H-O/8)+94.2*S, LHV_kJ=HHV_kJ-24.44*(9*H+W), HHV_MJ=HHV_kJ/1000, LHV_MJ=LHV_kJ/1000, ORT_MJ=(HHV_MJ+LHV_MJ)/2, HHV_kcal_kg=HHV_kJ*0.23885, LHV_kcal_kg=LHV_kJ*0.23885, ORT_kcal_kg=(HHV_kcal_kg+LHV_kcal_kg)/2; let HHV_kcal_Sm3=yogunluk>0?HHV_kcal_kg*yogunluk*Nm3_per_Sm3:null, LHV_kcal_Sm3=yogunluk>0?LHV_kcal_kg*yogunluk*Nm3_per_Sm3:null, ORT_kcal_Sm3=yogunluk>0?(HHV_kcal_Sm3+LHV_kcal_Sm3)/2:null; let O2_teo_Nm3=1.867*c+5.6*(h-o/8)+0.7*s, hava_teo_Nm3=O2_teo_Nm3/0.21, hava_gercek_Nm3=lambda*hava_teo_Nm3; let V_CO2_tam_Nm3=1.867*c, V_SO2_Nm3=0.7*s, V_H2O_Nm3=(9*h+w)*1.244, V_N2_yakit_Nm3=n*0.8; let O2_H=5.6*(h-o/8), O2_S=0.7*s, O2_H_S=O2_H+O2_S, O2_kalan_C=O2_teo_Nm3-O2_H_S; let V_CO2_Nm3, V_CO_Nm3, V_O2_artik_Nm3, V_N2_hava_Nm3, eksikYanma=false; if(O2_kalan_C>=V_CO2_tam_Nm3){ V_CO2_Nm3=V_CO2_tam_Nm3; V_CO_Nm3=0; V_O2_artik_Nm3=O2_kalan_C-V_CO2_tam_Nm3; } else { eksikYanma=true; let x=2*O2_kalan_C-V_CO2_tam_Nm3, y=V_CO2_tam_Nm3-x; if(x<0)x=0; if(y<0)y=0; V_CO2_Nm3=x; V_CO_Nm3=y; V_O2_artik_Nm3=0; } V_N2_hava_Nm3=0.79*hava_gercek_Nm3; let V_N2_Nm3=V_N2_hava_Nm3+V_N2_yakit_Nm3; let toplam_yas_Nm3=V_CO2_Nm3+V_SO2_Nm3+V_H2O_Nm3+V_N2_Nm3+V_O2_artik_Nm3+V_CO_Nm3, toplam_kuru_Nm3=V_CO2_Nm3+V_SO2_Nm3+V_N2_Nm3+V_O2_artik_Nm3+V_CO_Nm3; let O2_teo_Sm3=O2_teo_Nm3*Sm3_per_Nm3, hava_teo_Sm3=hava_teo_Nm3*Sm3_per_Nm3, hava_gercek_Sm3=hava_gercek_Nm3*Sm3_per_Nm3, V_CO2_Sm3=V_CO2_Nm3*Sm3_per_Nm3, V_SO2_Sm3=V_SO2_Nm3*Sm3_per_Nm3, V_H2O_Sm3=V_H2O_Nm3*Sm3_per_Nm3, V_N2_Sm3=V_N2_Nm3*Sm3_per_Nm3, V_O2_artik_Sm3=V_O2_artik_Nm3*Sm3_per_Nm3, V_CO_Sm3=V_CO_Nm3*Sm3_per_Nm3, toplam_yas_Sm3=toplam_yas_Nm3*Sm3_per_Nm3, toplam_kuru_Sm3=toplam_kuru_Nm3*Sm3_per_Nm3; function yuzde(hacim,toplam){ return toplam>0?(hacim/toplam*100).toFixed(2):"0.00"; } let html=`<h2>📊 Isıl Değerler</h2><div class="card-row"><div class="card"><span class="val">${HHV_MJ.toFixed(3)}</span> <span class="unit">MJ/kg</span><br>Üst Isıl Değer</div><div class="card"><span class="val">${LHV_MJ.toFixed(3)}</span> <span class="unit">MJ/kg</span><br>Alt Isıl Değer</div><div class="card"><span class="val">${ORT_MJ.toFixed(3)}</span> <span class="unit">MJ/kg</span><br>Ortalama</div></div><div class="card-row"><div class="card"><span class="val">${HHV_kcal_kg.toFixed(0)}</span> <span class="unit">kcal/kg</span><br>Üst Isıl Değer</div><div class="card"><span class="val">${LHV_kcal_kg.toFixed(0)}</span> <span class="unit">kcal/kg</span><br>Alt Isıl Değer</div><div class="card"><span class="val">${ORT_kcal_kg.toFixed(0)}</span> <span class="unit">kcal/kg</span><br>Ortalama</div></div>`; if(yogunluk>0){ html+=`<h3>Hacimsel Isıl Değerler (Sm³)</h3><div class="card-row"><div class="card"><span class="val">${HHV_kcal_Sm3.toFixed(0)}</span> <span class="unit">kcal/Sm³</span><br>Üst Isıl Değer</div><div class="card"><span class="val">${LHV_kcal_Sm3.toFixed(0)}</span> <span class="unit">kcal/Sm³</span><br>Alt Isıl Değer</div><div class="card"><span class="val">${ORT_kcal_Sm3.toFixed(0)}</span> <span class="unit">kcal/Sm³</span><br>Ortalama</div></div>`; } else { html+=`<div class="note">🔔 Hacimsel ısıl değerler (kcal/Sm³) için yakıt yoğunluğu giriniz.</div>`; } html+=`<h2>🌬️ Hava Miktarları (Sm³/kg)</h2><div class="card-row"><div class="card"><span class="val">${O2_teo_Sm3.toFixed(3)}</span> <span class="unit">Sm³/kg</span><br>Teorik O₂</div><div class="card"><span class="val">${hava_teo_Sm3.toFixed(3)}</span> <span class="unit">Sm³/kg</span><br>Teorik Hava</div><div class="card"><span class="val">${hava_gercek_Sm3.toFixed(3)}</span> <span class="unit">Sm³/kg</span><br>Gerçek Hava</div></div><h2>🔥 Yanma Ürünleri (λ = ${lambda})</h2><table><thead><tr><th>Bileşen</th><th>Hacim (Sm³/kg)</th><th>Yaş baz (%)</th><th>Kuru baz (%)</th></tr></thead><tbody><tr><td>CO₂</td><td>${V_CO2_Sm3.toFixed(4)}</td><td>${yuzde(V_CO2_Sm3,toplam_yas_Sm3)}</td><td>${yuzde(V_CO2_Sm3,toplam_kuru_Sm3)}</td></tr><tr><td>SO₂</td><td>${V_SO2_Sm3.toFixed(4)}</td><td>${yuzde(V_SO2_Sm3,toplam_yas_Sm3)}</td><td>${yuzde(V_SO2_Sm3,toplam_kuru_Sm3)}</td></tr><tr><td>H₂O (buhar)</td><td>${V_H2O_Sm3.toFixed(4)}</td><td>${yuzde(V_H2O_Sm3,toplam_yas_Sm3)}</td><td>-</td></tr><tr><td>N₂</td><td>${V_N2_Sm3.toFixed(4)}</td><td>${yuzde(V_N2_Sm3,toplam_yas_Sm3)}</td><td>${yuzde(V_N2_Sm3,toplam_kuru_Sm3)}</td></tr><tr><td>O₂ (artık)</td><td>${V_O2_artik_Sm3.toFixed(4)}</td><td>${yuzde(V_O2_artik_Sm3,toplam_yas_Sm3)}</td><td>${yuzde(V_O2_artik_Sm3,toplam_kuru_Sm3)}</td></tr>${V_CO_Sm3>0?`<tr><td>CO (karbonmonoksit)</td><td>${V_CO_Sm3.toFixed(4)}</td><td>${yuzde(V_CO_Sm3,toplam_yas_Sm3)}</td><td>${yuzde(V_CO_Sm3,toplam_kuru_Sm3)}</td></tr>`:''}<tr class="highlight"><td>Toplam (yaş)</td><td>${toplam_yas_Sm3.toFixed(4)}</td><td>100%</td><td>-</td></tr><tr class="highlight"><td>Toplam (kuru)</td><td>${toplam_kuru_Sm3.toFixed(4)}</td><td>-</td><td>100%</td></tr></tbody></table>`; if(eksikYanma) html+=`<div class="note">⚠️ Eksik yanma (λ<1) nedeniyle CO oluşmuştur.</div>`; sonuclarDiv.innerHTML=html; }
+    window.addEventListener('load',()=>{ const dogalgazBtn = document.querySelector('.yakit-buton[data-yakit="dogalgaz_dusuk"]'); if(dogalgazBtn){ dogalgazBtn.classList.add('aktif'); const veri = yakitlar['dogalgaz_dusuk']; if(veri){ cInp.value=veri.C; hInp.value=veri.H; oInp.value=veri.O; nInp.value=veri.N; sInp.value=veri.S; wInp.value=veri.W; kulInp.value=veri.kul; yogunlukInp.value=veri.yogunluk; } } yakitAnaliziHesapla(); });
+    const menuBtn = document.getElementById('menuToggleBtn'), sidebar = document.getElementById('sidebar'), body = document.body;
+    menuBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); body.classList.toggle('sidebar-open'); });
+    document.addEventListener('click', function(event) { if (!sidebar.contains(event.target) && !menuBtn.contains(event.target) && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); body.classList.remove('sidebar-open'); } });
+    const themeToggle = document.getElementById('themeToggleBtn'), themeIcon = themeToggle.querySelector('i');
+    if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode'); if (isDark) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); localStorage.setItem('theme', 'dark'); } else { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); localStorage.setItem('theme', 'light'); } });
+</script>
+</body>
+</html>

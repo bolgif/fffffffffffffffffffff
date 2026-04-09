@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>HP Türbin & Ara Isıtıcı | Efficiency Crest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ========= LIGHT MODE ========= */
+        :root {
+            --primary-dark: #0a2b4e;
+            --primary-blue: #1e3a5f;
+            --accent-red: #c62828;
+            --light-bg: #ffffff;
+            --gray-border: #e2e8f0;
+            --text-dark: #1e2a3a;
+            --text-muted: #4a627a;
+            --bg-body: #f5f7fc;
+            --bg-surface: #ffffff;
+            --bg-surface-secondary: #f8fafd;
+            --text-primary: #1f2a3e;
+            --text-secondary: #4a627a;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #eef3fc;
+            --footer-bg: #0a1c2f;
+            --footer-text: #ccdbe9;
+            --btn-primary-bg: #0a2b4e;
+            --btn-primary-hover: #c62828;
+            --sidebar-width: 280px;
+        }
+
+        /* ========= DARK MODE ========= */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-secondary: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+            --btn-primary-bg: #1e293b;
+            --btn-primary-hover: #ef4444;
+            --primary-dark: #38bdf8;
+            --primary-blue: #7dd3fc;
+            --accent-red: #ef4444;
+            --gray-border: #334155;
+            --text-dark: #e2e8f0;
+            --text-muted: #94a3b8;
+            --light-bg: #1e293b;
+        }
+
+        /* Flex yapı */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========= SIDEBAR ========= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease, background 0.2s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--btn-primary-bg);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s;
+            width: fit-content;
+        }
+        .home-btn i { font-size: 1.2rem; }
+        .home-btn:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-menu {
+            padding: 16px;
+        }
+        .menu-group {
+            margin-bottom: 24px;
+        }
+        .menu-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .menu-link i {
+            width: 24px;
+            color: var(--primary-blue);
+        }
+        .menu-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+        .menu-link.active {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .menu-link.active i {
+            color: white;
+        }
+
+        /* Ana içerik alanı */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            width: 100%;
+        }
+        body.sidebar-open .main-content {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Menü butonu */
+        .menu-toggle-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .menu-toggle-btn:hover {
+            background: var(--sidebar-hover);
+            color: var(--accent-red);
+        }
+
+        /* Ana header */
+        .main-header {
+            background: var(--bg-surface);
+            border-bottom: 3px solid var(--accent-red);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.2s ease;
+        }
+        .header-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            max-width: 100%;
+            margin: 0;
+            gap: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-title a {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .brand-title a:hover {
+            color: var(--accent-red);
+        }
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: 0.2s;
+            padding: 6px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* Gece modu butonu */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            margin-left: 10px;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-surface-secondary);
+            color: var(--accent-red);
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0 32px;
+        }
+
+        /* İçerik alanı */
+        .content-section {
+            background: var(--bg-surface);
+            border-radius: 0;
+            margin: 2rem 0;
+            padding: 2rem 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            border-right: none;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--accent-red);
+            padding-left: 18px;
+        }
+
+        /* Ana panel (sol menü + sağ içerik) */
+        .main-panel {
+            display: flex;
+            flex-wrap: wrap;
+            background: var(--bg-surface-secondary);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .menu-panel {
+            flex: 0 0 280px;
+            background: var(--bg-surface-secondary);
+            padding: 1.5rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .menu-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-red);
+            display: inline-block;
+        }
+
+        .menu-item {
+            margin-bottom: 1.2rem;
+        }
+
+        .menu-item label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .menu-item input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .menu-item input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
+        }
+
+        .btn-generate {
+            background: var(--btn-primary-bg);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.8rem;
+            border-radius: 2rem;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-generate:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .content-panel {
+            flex: 1;
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        /* Türbin kartları */
+        .turbin-karti {
+            background: var(--bg-surface-secondary);
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .turbin-baslik {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .turbin-baslik span {
+            background: var(--bg-surface);
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 0.2rem;
+        }
+
+        .input-wrapper input {
+            flex: 2;
+            padding: 0.5rem 0.8rem;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .input-wrapper select {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 1rem;
+            background: var(--bg-surface-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .btn-calculate {
+            background: var(--btn-primary-bg);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            transition: 0.2s;
+        }
+
+        .btn-calculate:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        .sonuclar {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 0.8rem;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .sonuc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .sonuc-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .sonuc-value {
+            font-weight: 700;
+            color: var(--primary-dark);
+            background: var(--bg-surface-secondary);
+            padding: 0.1rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Ara ısıtıcı kartları */
+        .ara-isitici-karti {
+            background: var(--bg-surface-secondary);
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            border: 2px solid var(--accent-red);
+        }
+
+        .ara-isitici-baslik {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .mod-secimi {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+
+        .mod-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mod-btn.aktif {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .ara-input-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .ara-input-group {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ara-input-group label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .ara-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 0.2rem;
+        }
+
+        .ara-input-wrapper input {
+            flex: 2;
+            padding: 0.5rem 0.8rem;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .ara-input-wrapper select {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 1rem;
+            background: var(--bg-surface-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .ara-sonuc {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .ara-sonuc output {
+            font-weight: 700;
+            color: var(--primary-dark);
+            background: var(--bg-surface-secondary);
+            padding: 0.2rem 1rem;
+            border-radius: 2rem;
+            margin-left: 0.5rem;
+        }
+
+        .info-note {
+            background: var(--bg-surface);
+            border-left: 5px solid var(--accent-red);
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        footer.official-footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            margin-top: 2rem;
+            padding: 2rem 32px 1.5rem;
+            font-size: 0.8rem;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-links a {
+            color: var(--footer-text);
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 0.8rem;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 780px) {
+            .container, .header-wrapper, .content-section, .official-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .menu-panel {
+                flex: 0 0 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .content-panel {
+                max-height: none;
+            }
+            .nav-menu {
+                width: 100%;
+                overflow-x: auto;
+            }
+            .theme-toggle {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            .logo-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="home-btn"><i class="fas fa-home"></i> 🏠 Ana Sayfa</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-group">
+                <div class="menu-group-title">TEMEL ANALİZLER</div>
+                <a href="yakıt_analizi_ son.html" class="menu-link"><i class="fas fa-fire"></i> Yakıt Analizi</a>
+                <a href="#" class="menu-link" onclick="alert('Maliyet hesabı sayfası (maliyet hesap son.html)'); return false;"><i class="fas fa-coins"></i> Yakıt Maliyeti</a>
+                <a href="#" class="menu-link" onclick="alert('Kazan verim sayfası (verim son.html)'); return false;"><i class="fas fa-chart-simple"></i> Kazan Verim Hesabı</a>
+                <a href="#" class="menu-link active"><i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı</a>
+                <a href="#" class="menu-link" onclick="alert('Ekonomizer aracı (eko.html)'); return false;"><i class="fas fa-exchange-alt"></i> Fırın Ekonomizeri</a>
+                <a href="#" class="menu-link" onclick="alert('Kondenser / ısı değiştirici (kondenser.html)'); return false;"><i class="fas fa-snowplow"></i> Isı Değiştirici</a>
+                <a href="#" class="menu-link" onclick="alert('Besi suyu sayfası (besi suyu son.html)'); return false;"><i class="fas fa-water"></i> Besi Suyu Hesabı</a>
+                <a href="#" class="menu-link" onclick="alert('Yanma hesaplayıcı (yanma son.html)'); return false;"><i class="fas fa-fire-extinguisher"></i> Yanma Hesabı</a>
+            </div>
+            <div class="menu-group">
+                <div class="menu-group-title">DOĞALGAZ PİYASASI</div>
+                <a href="#" class="menu-link" onclick="alert('Türkiye fiyat tahmini (tr tahmin.html)'); return false;"><i class="fas fa-chart-line"></i> Fiyat Tahmini · TR</a>
+                <a href="#" class="menu-link" onclick="alert('Geçmiş endeks (gecmis endeks.html)'); return false;"><i class="fas fa-globe-americas"></i> Küresel Fiyat Endeksi</a>
+                <a href="#" class="menu-link" onclick="alert('Gelecek tahmin (gelecek tahmin.html)'); return false;"><i class="fas fa-calendar-alt"></i> Doğalgaz Tahmini 2035</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ANA İÇERİK -->
+    <main class="main-content" id="mainContent">
+        <!-- ana header -->
+        <div class="main-header">
+            <div class="header-wrapper">
+                <div class="logo-area">
+                    <button class="menu-toggle-btn" id="menuToggleBtn"><i class="fas fa-bars"></i></button>
+                    <div class="brand-title">
+                        <a href="index.html">Efficiency Crest</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="nav-menu">
+                        <ul>
+                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="#" class="active">HP Türbin · Ara Isıtıcı</a></li>
+                            <li><a href="#">Dokümanlar</a></li>
+                            <li><a href="#">Duyurular</a></li>
+                            <li><a href="index.html#contact">İletişim</a></li>
+                        </ul>
+                    </div>
+                    <button class="theme-toggle" id="themeToggleBtn" aria-label="Gece modu">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-fan"></i> HP Türbin & Ara Isıtıcı Konfigürasyonu
+                </div>
+                <div class="main-panel">
+                    <!-- Sol menü -->
+                    <div class="menu-panel">
+                        <div class="menu-title">⚙️ Yapılandırma</div>
+                        <div class="menu-item">
+                            <label>Türbin sayısı</label>
+                            <input type="number" id="turbinSayisi" min="1" max="5" value="2">
+                        </div>
+                        <div class="menu-item">
+                            <label>Ara ısıtıcı sayısı (maks. türbin sayısı)</label>
+                            <input type="number" id="araIsiticiSayisi" min="0" max="5" value="1">
+                        </div>
+                        <div class="menu-item">
+                            <label>Sıralama (T: Türbin, A: Ara ısıtıcı)</label>
+                            <input type="text" id="siralama" value="T A T" placeholder="Örnek: T A T A T">
+                        </div>
+                        <button class="btn-generate" id="olusturBtn"><i class="fas fa-sync-alt"></i> Oluştur</button>
+                        <div class="info-note">
+                            <i class="fas fa-info-circle"></i> Sıralama, T ve A harfleriyle girilir. Toplam T sayısı türbin sayısına, A sayısı ara ısıtıcı sayısına eşit olmalıdır.
+                        </div>
+                    </div>
+
+                    <!-- Sağ içerik (dinamik) -->
+                    <div class="content-panel" id="contentPanel"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="official-footer">
+            <div class="footer-inner">
+                <div><i class="fas fa-chart-simple"></i> Efficiency Crest · Termodinamik Hesaplama Portalı</div>
+                <div class="footer-links">
+                    <a href="#">Gizlilik</a>
+                    <a href="#">Kullanım Koşulları</a>
+                    <a href="#">Enerji Verimliliği</a>
+                    <a href="#">Yardım</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <i class="fas fa-copyright"></i> 2026 Efficiency Crest - Tüm hesaplamalar mühendislik prensiplerine dayanır. Bu portal, termodinamik analiz ve eğitim amaçlıdır.
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script>
+    (function() {
+        // ---------- Birim Dönüşüm Fonksiyonları (Türbin) ----------
+        function convertPressureToBar(value, unit) {
+            switch(unit) {
+                case 'bar': return value;
+                case 'psi': return value * 0.0689476;
+                case 'kpa': return value / 100;
+                case 'mpa': return value * 10;
+                default: return value;
+            }
+        }
+        function convertTemperatureToC(value, unit) {
+            switch(unit) {
+                case 'c': return value;
+                case 'f': return (value - 32) * 5/9;
+                case 'k': return value - 273.15;
+                default: return value;
+            }
+        }
+        function convertFlowToKgs(value, unit) {
+            switch(unit) {
+                case 'kgh': return value / 3600;
+                case 'kgs': return value;
+                case 'lbh': return (value * 0.453592) / 3600;
+                case 'lbs': return value * 0.453592;
+                case 'tonh': return (value * 1000) / 3600;
+                default: return value / 3600;
+            }
+        }
+        function convertEfficiencyToFraction(value, unit) {
+            switch(unit) {
+                case 'percent': return value / 100;
+                case 'fraction': return value;
+                default: return value / 100;
+            }
+        }
+        function convertFromBar(value, targetUnit) {
+            switch(targetUnit) {
+                case 'bar': return value;
+                case 'psi': return value / 0.0689476;
+                case 'kpa': return value * 100;
+                case 'mpa': return value / 10;
+                default: return value;
+            }
+        }
+        function convertFromC(value, targetUnit) {
+            switch(targetUnit) {
+                case 'c': return value;
+                case 'f': return value * 9/5 + 32;
+                case 'k': return value + 273.15;
+                default: return value;
+            }
+        }
+        function convertPowerFromKw(value, targetUnit) {
+            switch(targetUnit) {
+                case 'kw': return value;
+                case 'mw': return value / 1000;
+                case 'btuh': return value * 3412.14;
+                case 'kcalh': return value * 859.845;
+                default: return value;
+            }
+        }
+
+        const steamTableFull = [
+            { P: 0.1, T: 45.83, hf: 191.83, hg: 2584.7, sf: 0.6493, sg: 8.1502 },
+            { P: 0.2, T: 60.06, hf: 251.42, hg: 2609.7, sf: 0.8321, sg: 7.9085 },
+            { P: 0.5, T: 81.35, hf: 340.56, hg: 2646.0, sf: 1.0912, sg: 7.5939 },
+            { P: 1.0, T: 99.63, hf: 417.51, hg: 2675.5, sf: 1.3027, sg: 7.3594 },
+            { P: 2.0, T: 120.23, hf: 504.70, hg: 2706.7, sf: 1.5301, sg: 7.1271 },
+            { P: 5.0, T: 151.86, hf: 640.23, hg: 2748.7, sf: 1.8607, sg: 6.8192 },
+            { P: 10.0, T: 179.91, hf: 762.81, hg: 2778.1, sf: 2.1387, sg: 6.5865 },
+            { P: 20.0, T: 212.42, hf: 908.79, hg: 2799.5, sf: 2.4474, sg: 6.3409 },
+            { P: 30.0, T: 233.90, hf: 1008.4, hg: 2804.2, sf: 2.6455, sg: 6.1869 },
+            { P: 40.0, T: 250.40, hf: 1087.5, hg: 2801.4, sf: 2.7967, sg: 6.0701 },
+            { P: 50.0, T: 263.99, hf: 1154.6, hg: 2794.3, sf: 2.9207, sg: 5.9734 },
+            { P: 60.0, T: 275.64, hf: 1213.7, hg: 2784.3, sf: 3.0277, sg: 5.8892 },
+            { P: 70.0, T: 285.88, hf: 1267.0, hg: 2772.1, sf: 3.1225, sg: 5.8142 },
+            { P: 80.0, T: 295.06, hf: 1316.6, hg: 2758.0, sf: 3.2081, sg: 5.7450 },
+            { P: 90.0, T: 303.40, hf: 1363.3, hg: 2742.1, sf: 3.2866, sg: 5.6799 },
+            { P: 100.0, T: 311.06, hf: 1407.6, hg: 2725.5, sf: 3.3596, sg: 5.6151 }
+        ];
+
+        function interpolateProperties(P) {
+            if (P < steamTableFull[0].P || P > steamTableFull[steamTableFull.length-1].P) return null;
+            for (let i = 0; i < steamTableFull.length-1; i++) {
+                if (steamTableFull[i].P <= P && steamTableFull[i+1].P >= P) {
+                    let pLow = steamTableFull[i].P, pHigh = steamTableFull[i+1].P;
+                    let ratio = (P - pLow) / (pHigh - pLow);
+                    return {
+                        P: P,
+                        T: steamTableFull[i].T + ratio * (steamTableFull[i+1].T - steamTableFull[i].T),
+                        hf: steamTableFull[i].hf + ratio * (steamTableFull[i+1].hf - steamTableFull[i].hf),
+                        hg: steamTableFull[i].hg + ratio * (steamTableFull[i+1].hg - steamTableFull[i].hg),
+                        sf: steamTableFull[i].sf + ratio * (steamTableFull[i+1].sf - steamTableFull[i].sf),
+                        sg: steamTableFull[i].sg + ratio * (steamTableFull[i+1].sg - steamTableFull[i].sg)
+                    };
+                }
+            }
+            return null;
+        }
+
+        const CP_SUPERHEAT = 2.0;
+        const CP_WATER = 4.2;
+
+        function hesaplaTurbin(kart) {
+            const pInRaw = parseFloat(kart.querySelector('.p_in').value);
+            const pInUnit = kart.querySelector('.p_in_unit').value;
+            const pIn = convertPressureToBar(pInRaw, pInUnit);
+
+            const tInRaw = parseFloat(kart.querySelector('.t_in').value);
+            const tInUnit = kart.querySelector('.t_in_unit').value;
+            const tIn = convertTemperatureToC(tInRaw, tInUnit);
+
+            const flowRaw = parseFloat(kart.querySelector('.flow').value);
+            const flowUnit = kart.querySelector('.flow_unit').value;
+            const mdot = convertFlowToKgs(flowRaw, flowUnit);
+
+            const pOutRaw = parseFloat(kart.querySelector('.p_out').value);
+            const pOutUnit = kart.querySelector('.p_out_unit').value;
+            const pOut = convertPressureToBar(pOutRaw, pOutUnit);
+
+            const effRaw = parseFloat(kart.querySelector('.eff').value);
+            const effUnit = kart.querySelector('.eff_unit').value;
+            const eff = convertEfficiencyToFraction(effRaw, effUnit);
+
+            const genEffRaw = parseFloat(kart.querySelector('.gen_eff').value);
+            const genEffUnit = kart.querySelector('.gen_eff_unit').value;
+            const genEff = convertEfficiencyToFraction(genEffRaw, genEffUnit);
+
+            if ([pIn, tIn, mdot, pOut, eff, genEff].some(isNaN)) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            if (pIn < 0.1 || pIn > 100 || pOut < 0.1 || pOut > 100) {
+                alert("Basınçlar 0.1-100 bar arasında olmalıdır.");
+                return;
+            }
+            if (eff <= 0 || eff > 1) {
+                alert("Türbin verimi 0-1 arasında olmalıdır.");
+                return;
+            }
+            if (genEff <= 0 || genEff > 1) {
+                alert("Generatör verimi 0-1 arasında olmalıdır.");
+                return;
+            }
+            if (mdot <= 0) {
+                alert("Debi pozitif olmalıdır.");
+                return;
+            }
+            if (pOut >= pIn) {
+                alert("Çıkış basıncı giriş basıncından düşük olmalıdır.");
+                return;
+            }
+
+            let inletSat = interpolateProperties(pIn);
+            let outletSat = interpolateProperties(pOut);
+            if (!inletSat || !outletSat) {
+                alert("Basınç değerleri tablo dışında.");
+                return;
+            }
+
+            let h_in, s_in;
+            let T_sat_in = inletSat.T;
+            if (tIn < T_sat_in - 0.5) {
+                h_in = CP_WATER * tIn;
+                let Tk_in = tIn + 273.15;
+                s_in = CP_WATER * Math.log(Tk_in / 273.15);
+            } else if (tIn >= T_sat_in - 0.5 && tIn <= T_sat_in + 0.5) {
+                h_in = inletSat.hg;
+                s_in = inletSat.sg;
+            } else {
+                h_in = inletSat.hg + CP_SUPERHEAT * (tIn - T_sat_in);
+                let Tk_in = tIn + 273.15;
+                let Tk_sat = T_sat_in + 273.15;
+                s_in = inletSat.sg + CP_SUPERHEAT * Math.log(Tk_in / Tk_sat);
+            }
+
+            let sf_out = outletSat.sf, sg_out = outletSat.sg;
+            let hf_out = outletSat.hf, hg_out = outletSat.hg;
+            let T_sat_out = outletSat.T;
+
+            let x_ideal, h_out_ideal;
+            if (s_in >= sg_out) {
+                let T_sat_abs = T_sat_out + 273.15;
+                let T_out_ideal_abs = T_sat_abs * Math.exp((s_in - sg_out) / CP_SUPERHEAT);
+                let T_out_ideal = T_out_ideal_abs - 273.15;
+                h_out_ideal = hg_out + CP_SUPERHEAT * (T_out_ideal - T_sat_out);
+                x_ideal = 1.0;
+            } else {
+                x_ideal = (s_in - sf_out) / (sg_out - sf_out);
+                x_ideal = Math.min(1, Math.max(0, x_ideal));
+                h_out_ideal = hf_out + x_ideal * (hg_out - hf_out);
+            }
+
+            let delta_h_ideal = h_in - h_out_ideal;
+            let delta_h_real = delta_h_ideal * eff;
+            let h_out_real = h_in - delta_h_real;
+
+            let x_real, T_out_real;
+            if (h_out_real >= hg_out) {
+                x_real = 1.0;
+                T_out_real = T_sat_out + (h_out_real - hg_out) / CP_SUPERHEAT;
+            } else if (h_out_real <= hf_out) {
+                x_real = 0.0;
+                T_out_real = T_sat_out;
+            } else {
+                x_real = (h_out_real - hf_out) / (hg_out - hf_out);
+                x_real = Math.min(1, Math.max(0, x_real));
+                T_out_real = T_sat_out;
+            }
+
+            let power_kW = mdot * delta_h_real;
+            let electric_kW = power_kW * genEff;
+
+            kart.querySelector('.resPout').innerText = convertFromBar(pOut, pOutUnit).toFixed(2) + ' ' + pOutUnit;
+            kart.querySelector('.resTsat').innerText = convertFromC(T_sat_out, tInUnit).toFixed(1) + ' ' + tInUnit;
+            kart.querySelector('.resTout').innerText = convertFromC(T_out_real, tInUnit).toFixed(1) + ' ' + tInUnit;
+            kart.querySelector('.resX').innerText = x_real.toFixed(4);
+            kart.querySelector('.resHout').innerText = h_out_real.toFixed(2) + ' kJ/kg';
+            kart.querySelector('.resHin').innerText = h_in.toFixed(2) + ' kJ/kg';
+            kart.querySelector('.resPower').innerText = convertPowerFromKw(power_kW, 'kw').toFixed(2) + ' kW';
+            kart.querySelector('.resElectric').innerText = convertPowerFromKw(electric_kW, 'kw').toFixed(2) + ' kW';
+            kart.querySelector('.resFlow').innerText = flowRaw.toFixed(0) + ' ' + flowUnit;
+            kart.querySelector('.resHf').innerText = hf_out.toFixed(2) + ' kJ/kg';
+            kart.querySelector('.resHg').innerText = hg_out.toFixed(2) + ' kJ/kg';
+            kart.querySelector('.resHfg').innerText = (hg_out - hf_out).toFixed(2) + ' kJ/kg';
+        }
+
+        function turbinKartOlustur(index) {
+            const kart = document.createElement('div');
+            kart.className = 'turbin-karti';
+            kart.innerHTML = `
+                <div class="turbin-baslik"><span>⚡ TÜRBİN ${index+1}</span></div>
+                <div class="input-row">
+                    <div class="input-group"><label>Giriş basıncı</label><div class="input-wrapper"><input type="number" class="p_in" step="0.1" min="0.1" max="100" value="10"><select class="p_in_unit"><option value="bar" selected>bar</option><option value="psi">psi</option><option value="kpa">kPa</option><option value="mpa">MPa</option></select></div></div>
+                    <div class="input-group"><label>Giriş sıcaklığı</label><div class="input-wrapper"><input type="number" class="t_in" step="0.1" min="0.1" max="600" value="200"><select class="t_in_unit"><option value="c" selected>°C</option><option value="f">°F</option><option value="k">K</option></select></div></div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group"><label>Debi</label><div class="input-wrapper"><input type="number" class="flow" step="1" min="1" value="3600"><select class="flow_unit"><option value="kgh" selected>kg/h</option><option value="kgs">kg/s</option><option value="lbh">lb/h</option><option value="lbs">lb/s</option><option value="tonh">ton/h</option></select></div></div>
+                    <div class="input-group"><label>Çıkış basıncı</label><div class="input-wrapper"><input type="number" class="p_out" step="0.1" min="0.1" max="100" value="1"><select class="p_out_unit"><option value="bar" selected>bar</option><option value="psi">psi</option><option value="kpa">kPa</option><option value="mpa">MPa</option></select></div></div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group"><label>Türbin verimi</label><div class="input-wrapper"><input type="number" class="eff" step="0.1" min="10" max="100" value="85"><select class="eff_unit"><option value="percent" selected>%</option><option value="fraction">0-1</option></select></div></div>
+                    <div class="input-group"><label>Generatör verimi</label><div class="input-wrapper"><input type="number" class="gen_eff" step="0.1" min="10" max="100" value="98"><select class="gen_eff_unit"><option value="percent" selected>%</option><option value="fraction">0-1</option></select></div></div>
+                </div>
+                <button class="btn-calculate">HESAPLA</button>
+                <div class="sonuclar">
+                    <div class="sonuc-item"><span class="sonuc-label">Çıkış basıncı</span><span class="sonuc-value resPout">1.0 bar</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Doyma sıcaklığı (çıkış)</span><span class="sonuc-value resTsat">99.6 °C</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Gerçek çıkış sıcaklığı</span><span class="sonuc-value resTout">99.6 °C</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Kuruluk derecesi (x)</span><span class="sonuc-value resX">0.88</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Çıkış entalpisi</span><span class="sonuc-value resHout">2500 kJ/kg</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Giriş entalpisi</span><span class="sonuc-value resHin">800 kJ/kg</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Üretilen güç</span><span class="sonuc-value resPower">500 kW</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Üretilen elektrik</span><span class="sonuc-value resElectric">490 kW</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">Debi</span><span class="sonuc-value resFlow">3600 kg/h</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">hf (sıvı)</span><span class="sonuc-value resHf">417.5 kJ/kg</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">hg (buhar)</span><span class="sonuc-value resHg">2675.5 kJ/kg</span></div>
+                    <div class="sonuc-item"><span class="sonuc-label">hfg (gizli ısı)</span><span class="sonuc-value resHfg">2258.0 kJ/kg</span></div>
+                </div>
+            `;
+            kart.querySelector('.btn-calculate').addEventListener('click', function(e) {
+                hesaplaTurbin(kart);
+            });
+            return kart;
+        }
+
+        // ---------- Ara Isıtıcı ----------
+        function toCelsius(value, unit) {
+            if (unit === 'C') return value;
+            if (unit === 'F') return (value - 32) / 1.8;
+            if (unit === 'K') return value - 273.15;
+            return value;
+        }
+        function fromCelsius(value, unit) {
+            if (unit === 'C') return value;
+            if (unit === 'F') return value * 1.8 + 32;
+            if (unit === 'K') return value + 273.15;
+            return value;
+        }
+        function toKgPerS(value, unit) {
+            if (unit === 'kg/s') return value;
+            if (unit === 'kg/h') return value / 3600;
+            if (unit === 'lb/s') return value * 0.453592;
+            if (unit === 'lb/h') return value * 0.453592 / 3600;
+            return value;
+        }
+        function toKw(value, unit) {
+            if (unit === 'kW') return value;
+            if (unit === 'BTU/h') return value / 3412.14;
+            if (unit === 'kcal/h') return value / 859.845;
+            return value;
+        }
+        function fromKw(value, unit) {
+            if (unit === 'kW') return value;
+            if (unit === 'BTU/h') return value * 3412.14;
+            if (unit === 'kcal/h') return value * 859.845;
+            return value;
+        }
+        function toKjPerKgC(value, unit) {
+            if (unit === 'kJ/kgC') return value;
+            if (unit === 'BTU/lbF') return value * 4.1868;
+            if (unit === 'kcal/kgC') return value * 4.1868;
+            return value;
+        }
+
+        function calculateMod1(container) {
+            try {
+                const T_in_val = parseFloat(container.querySelector('.T_in1').value);
+                const T_in_unit = container.querySelector('.T_inUnit1').value;
+                const m_val = parseFloat(container.querySelector('.m_dot1').value);
+                const m_unit = container.querySelector('.m_dotUnit1').value;
+                const Q_val = parseFloat(container.querySelector('.Q1').value);
+                const Q_unit = container.querySelector('.QUnit1').value;
+                const cp_val = parseFloat(container.querySelector('.cp1').value);
+                const cp_unit = container.querySelector('.cpUnit1').value;
+
+                if (isNaN(T_in_val) || isNaN(m_val) || isNaN(Q_val) || isNaN(cp_val) || m_val <= 0 || cp_val <= 0) {
+                    alert('Lütfen geçerli pozitif sayılar girin (debi ve Cp sıfırdan büyük olmalı).');
+                    return;
+                }
+
+                const T_in_C = toCelsius(T_in_val, T_in_unit);
+                const m_kg_s = toKgPerS(m_val, m_unit);
+                const Q_kW = toKw(Q_val, Q_unit);
+                const cp_kJ_kgC = toKjPerKgC(cp_val, cp_unit);
+
+                const deltaT = Q_kW / (m_kg_s * cp_kJ_kgC);
+                const T_out_C = T_in_C + deltaT;
+
+                const T_out_unit = container.querySelector('.T_outUnit1').value;
+                const T_out_disp = fromCelsius(T_out_C, T_out_unit);
+
+                container.querySelector('.T_out1').innerText = T_out_disp.toFixed(3);
+            } catch (e) {
+                alert('Hesaplama hatası: ' + e.message);
+            }
+        }
+
+        function calculateMod2(container) {
+            try {
+                const T_in_val = parseFloat(container.querySelector('.T_in2').value);
+                const T_in_unit = container.querySelector('.T_inUnit2').value;
+                const T_out_val = parseFloat(container.querySelector('.T_out2').value);
+                const T_out_unit = container.querySelector('.T_outUnit2').value;
+                const m_val = parseFloat(container.querySelector('.m_dot2').value);
+                const m_unit = container.querySelector('.m_dotUnit2').value;
+                const cp_val = parseFloat(container.querySelector('.cp2').value);
+                const cp_unit = container.querySelector('.cpUnit2').value;
+
+                if (isNaN(T_in_val) || isNaN(T_out_val) || isNaN(m_val) || isNaN(cp_val) || m_val <= 0 || cp_val <= 0) {
+                    alert('Lütfen geçerli pozitif sayılar girin (debi ve Cp sıfırdan büyük olmalı).');
+                    return;
+                }
+
+                const T_in_C = toCelsius(T_in_val, T_in_unit);
+                const T_out_C = toCelsius(T_out_val, T_out_unit);
+                const m_kg_s = toKgPerS(m_val, m_unit);
+                const cp_kJ_kgC = toKjPerKgC(cp_val, cp_unit);
+
+                const deltaT = T_out_C - T_in_C;
+                const Q_kW = m_kg_s * cp_kJ_kgC * deltaT;
+                const Q_out_unit = container.querySelector('.Q_outUnit2').value;
+                const Q_disp = fromKw(Q_kW, Q_out_unit);
+
+                container.querySelector('.Q2').innerText = Q_disp.toFixed(3);
+            } catch (e) {
+                alert('Hesaplama hatası: ' + e.message);
+            }
+        }
+
+        function araIsiticiKartOlustur(index) {
+            const kart = document.createElement('div');
+            kart.className = 'ara-isitici-karti';
+            kart.setAttribute('data-index', index);
+            kart.innerHTML = `
+                <div class="ara-isitici-baslik">🔥 ARA ISITICI ${index+1}</div>
+                <div class="mod-secimi">
+                    <button class="mod-btn mod1-btn aktif" type="button">Mod 1 (Çıkış Sıcaklığı)</button>
+                    <button class="mod-btn mod2-btn" type="button">Mod 2 (Isı Yükü Q)</button>
+                </div>
+                <div class="mod1-content">
+                    <div class="ara-input-row"><div class="ara-input-group"><label>Özgül ısı (Cp):</label><div class="ara-input-wrapper"><input type="number" class="cp1" step="any" value="4.18"><select class="cpUnit1"><option value="kJ/kgC">kJ/kg°C</option><option value="BTU/lbF">BTU/lb°F</option><option value="kcal/kgC">kcal/kg°C</option></select></div></div></div>
+                    <div class="ara-input-row">
+                        <div class="ara-input-group"><label>Giriş sıcaklığı:</label><div class="ara-input-wrapper"><input type="number" class="T_in1" step="any" value="20"><select class="T_inUnit1"><option value="C">°C</option><option value="F">°F</option><option value="K">K</option></select></div></div>
+                        <div class="ara-input-group"><label>Debi:</label><div class="ara-input-wrapper"><input type="number" class="m_dot1" step="any" value="1"><select class="m_dotUnit1"><option value="kg/s">kg/s</option><option value="kg/h">kg/h</option><option value="lb/s">lb/s</option><option value="lb/h">lb/h</option></select></div></div>
+                    </div>
+                    <div class="ara-input-row">
+                        <div class="ara-input-group"><label>Isı yükü (Q):</label><div class="ara-input-wrapper"><input type="number" class="Q1" step="any" value="100"><select class="QUnit1"><option value="kW">kW</option><option value="BTU/h">BTU/h</option><option value="kcal/h">kcal/h</option></select></div></div>
+                    </div>
+                    <button class="btn-calculate">Hesapla (Mod 1)</button>
+                    <div class="ara-sonuc"><span>Çıkış sıcaklığı:</span><output class="T_out1">-</output><select class="T_outUnit1"><option value="C">°C</option><option value="F">°F</option><option value="K">K</option></select></div>
+                </div>
+                <div class="mod2-content" style="display: none;">
+                    <div class="ara-input-row"><div class="ara-input-group"><label>Özgül ısı (Cp):</label><div class="ara-input-wrapper"><input type="number" class="cp2" step="any" value="4.18"><select class="cpUnit2"><option value="kJ/kgC">kJ/kg°C</option><option value="BTU/lbF">BTU/lb°F</option><option value="kcal/kgC">kcal/kg°C</option></select></div></div></div>
+                    <div class="ara-input-row">
+                        <div class="ara-input-group"><label>Giriş sıcaklığı:</label><div class="ara-input-wrapper"><input type="number" class="T_in2" step="any" value="20"><select class="T_inUnit2"><option value="C">°C</option><option value="F">°F</option><option value="K">K</option></select></div></div>
+                        <div class="ara-input-group"><label>Çıkış sıcaklığı:</label><div class="ara-input-wrapper"><input type="number" class="T_out2" step="any" value="80"><select class="T_outUnit2"><option value="C">°C</option><option value="F">°F</option><option value="K">K</option></select></div></div>
+                    </div>
+                    <div class="ara-input-row">
+                        <div class="ara-input-group"><label>Debi:</label><div class="ara-input-wrapper"><input type="number" class="m_dot2" step="any" value="1"><select class="m_dotUnit2"><option value="kg/s">kg/s</option><option value="kg/h">kg/h</option><option value="lb/s">lb/s</option><option value="lb/h">lb/h</option></select></div></div>
+                    </div>
+                    <button class="btn-calculate">Hesapla (Mod 2)</button>
+                    <div class="ara-sonuc"><span>Gerekli ısı (Q):</span><output class="Q2">-</output><select class="Q_outUnit2"><option value="kW">kW</option><option value="BTU/h">BTU/h</option><option value="kcal/h">kcal/h</option></select></div>
+                </div>
+            `;
+            const mod1Btn = kart.querySelector('.mod1-btn');
+            const mod2Btn = kart.querySelector('.mod2-btn');
+            const mod1Content = kart.querySelector('.mod1-content');
+            const mod2Content = kart.querySelector('.mod2-content');
+            mod1Btn.addEventListener('click', function() {
+                mod1Btn.classList.add('aktif');
+                mod2Btn.classList.remove('aktif');
+                mod1Content.style.display = 'block';
+                mod2Content.style.display = 'none';
+            });
+            mod2Btn.addEventListener('click', function() {
+                mod2Btn.classList.add('aktif');
+                mod1Btn.classList.remove('aktif');
+                mod2Content.style.display = 'block';
+                mod1Content.style.display = 'none';
+            });
+            kart.querySelector('.mod1-content .btn-calculate').addEventListener('click', function(e) {
+                e.preventDefault();
+                calculateMod1(kart);
+            });
+            kart.querySelector('.mod2-content .btn-calculate').addEventListener('click', function(e) {
+                e.preventDefault();
+                calculateMod2(kart);
+            });
+            return kart;
+        }
+
+        function updateMaxAraIsitici() {
+            const turbinSayisi = parseInt(document.getElementById('turbinSayisi').value) || 1;
+            const araInput = document.getElementById('araIsiticiSayisi');
+            araInput.max = turbinSayisi;
+            if (parseInt(araInput.value) > turbinSayisi) {
+                araInput.value = turbinSayisi;
+            }
+        }
+
+        document.getElementById('turbinSayisi').addEventListener('input', updateMaxAraIsitici);
+        document.getElementById('araIsiticiSayisi').addEventListener('input', function() {
+            const turbinSayisi = parseInt(document.getElementById('turbinSayisi').value) || 1;
+            const araInput = document.getElementById('araIsiticiSayisi');
+            if (parseInt(araInput.value) > turbinSayisi) {
+                araInput.value = turbinSayisi;
+            }
+        });
+
+        document.getElementById('olusturBtn').addEventListener('click', function() {
+            const turbinSayisi = parseInt(document.getElementById('turbinSayisi').value) || 1;
+            const araIsiticiSayisi = parseInt(document.getElementById('araIsiticiSayisi').value) || 0;
+
+            const siralamaStr = document.getElementById('siralama').value.trim().replace(/\s+/g, '').toUpperCase();
+            const sirala = [];
+            for (let ch of siralamaStr) {
+                if (ch === 'T' || ch === 'A') sirala.push(ch);
+            }
+            const tCount = sirala.filter(ch => ch === 'T').length;
+            const aCount = sirala.filter(ch => ch === 'A').length;
+
+            if (tCount !== turbinSayisi) {
+                alert(`Sıralamada ${turbinSayisi} adet T olmalı, ancak ${tCount} adet var.`);
+                return;
+            }
+            if (aCount !== araIsiticiSayisi) {
+                alert(`Sıralamada ${araIsiticiSayisi} adet A olmalı, ancak ${aCount} adet var.`);
+                return;
+            }
+
+            const panel = document.getElementById('contentPanel');
+            panel.innerHTML = '';
+            let turbinIndex = 0, ariIndex = 0;
+            sirala.forEach(ch => {
+                if (ch === 'T') {
+                    panel.appendChild(turbinKartOlustur(turbinIndex));
+                    turbinIndex++;
+                } else {
+                    panel.appendChild(araIsiticiKartOlustur(ariIndex));
+                    ariIndex++;
+                }
+            });
+        });
+
+        // ========== SIDEBAR & DARK MODE ==========
+        const menuBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const bodyEl = document.body;
+
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                bodyEl.classList.toggle('sidebar-open');
+            });
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnBtn = menuBtn.contains(event.target);
+                if (!isClickInsideSidebar && !isClickOnBtn && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    bodyEl.classList.remove('sidebar-open');
+                }
+            });
+        }
+
+        const themeToggle = document.getElementById('themeToggleBtn');
+        const themeIcon = themeToggle.querySelector('i');
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isDark) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        window.addEventListener('load', function() {
+            updateMaxAraIsitici();
+            document.getElementById('siralama').value = 'T A T';
+            document.getElementById('olusturBtn').click();
+        });
+    })();
+</script>
+</body>
+</html>
